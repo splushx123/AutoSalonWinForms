@@ -47,25 +47,25 @@ namespace AutoInsuranceWinForms
 
     public static class Theme
     {
-        public static readonly Color AppBack = Color.FromArgb(236, 240, 246);
-        public static readonly Color Surface = Color.FromArgb(246, 248, 252);
-        public static readonly Color Card = Color.FromArgb(255, 255, 255);
-        public static readonly Color CardAlt = Color.FromArgb(242, 246, 252);
-        public static readonly Color Ink = Color.FromArgb(16, 25, 43);
-        public static readonly Color Muted = Color.FromArgb(99, 113, 133);
-        public static readonly Color Border = Color.FromArgb(218, 225, 236);
-        public static readonly Color Primary = Color.FromArgb(18, 116, 196);
-        public static readonly Color PrimaryDark = Color.FromArgb(10, 75, 140);
-        public static readonly Color Accent = Color.FromArgb(0, 180, 216);
-        public static readonly Color Danger = Color.FromArgb(205, 67, 67);
-        public static readonly Color Success = Color.FromArgb(17, 153, 104);
-        public static readonly Color Warning = Color.FromArgb(232, 153, 58);
-        public static readonly Color Violet = Color.FromArgb(111, 89, 220);
+        public static readonly Color AppBack = Color.FromArgb(11, 14, 26);
+        public static readonly Color Surface = Color.FromArgb(19, 23, 39);
+        public static readonly Color Card = Color.FromArgb(24, 29, 48);
+        public static readonly Color CardAlt = Color.FromArgb(32, 38, 61);
+        public static readonly Color Ink = Color.FromArgb(222, 238, 255);
+        public static readonly Color Muted = Color.FromArgb(141, 167, 195);
+        public static readonly Color Border = Color.FromArgb(73, 88, 123);
+        public static readonly Color Primary = Color.FromArgb(135, 74, 255);
+        public static readonly Color PrimaryDark = Color.FromArgb(74, 38, 159);
+        public static readonly Color Accent = Color.FromArgb(0, 229, 255);
+        public static readonly Color Danger = Color.FromArgb(255, 91, 141);
+        public static readonly Color Success = Color.FromArgb(0, 255, 170);
+        public static readonly Color Warning = Color.FromArgb(255, 199, 61);
+        public static readonly Color Violet = Color.FromArgb(191, 122, 255);
 
         public static void StyleForm(Form form)
         {
             form.BackColor = AppBack;
-            form.Font = new Font("Segoe UI", 10F);
+            form.Font = new Font("Bahnschrift", 10F);
             form.ForeColor = Ink;
         }
 
@@ -76,7 +76,7 @@ namespace AutoInsuranceWinForms
                 BackColor = Card,
                 Padding = new Padding(padding),
                 Margin = new Padding(10),
-                Radius = 24,
+                Radius = 18,
                 StrokeColor = Border,
                 StrokeWidth = 1
             };
@@ -84,7 +84,7 @@ namespace AutoInsuranceWinForms
 
         public static Label Label(string text, float size, FontStyle style, Color color)
         {
-            return new Label { Text = text, Font = new Font("Segoe UI", size, style), ForeColor = color, AutoEllipsis = true };
+            return new Label { Text = text, Font = new Font("Bahnschrift", size, style), ForeColor = color, AutoEllipsis = true };
         }
 
         public static TextBox CreateTextBox(int width)
@@ -94,8 +94,8 @@ namespace AutoInsuranceWinForms
                 Width = width,
                 Height = 32,
                 BorderStyle = BorderStyle.FixedSingle,
-                Font = new Font("Segoe UI", 10F),
-                BackColor = Color.White,
+                Font = new Font("Consolas", 10F),
+                BackColor = CardAlt,
                 ForeColor = Ink
             };
         }
@@ -107,8 +107,8 @@ namespace AutoInsuranceWinForms
                 Width = width,
                 Height = 32,
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = new Font("Segoe UI", 10F),
-                BackColor = Color.White,
+                Font = new Font("Consolas", 10F),
+                BackColor = CardAlt,
                 ForeColor = Ink
             };
         }
@@ -119,7 +119,7 @@ namespace AutoInsuranceWinForms
             {
                 Width = width,
                 Format = DateTimePickerFormat.Short,
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Consolas", 10F)
             };
         }
 
@@ -131,13 +131,13 @@ namespace AutoInsuranceWinForms
                 Maximum = max,
                 DecimalPlaces = decimals,
                 ThousandsSeparator = true,
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Consolas", 10F)
             };
         }
 
         public static Button CreatePrimaryButton(string text, int width, bool filled)
         {
-            return BuildButton(text, width, filled ? Primary : Color.White, filled ? Color.White : Primary, filled ? Primary : Border, filled ? PrimaryDark : CardAlt);
+            return BuildButton(text, width, filled ? Primary : CardAlt, filled ? Color.White : Accent, filled ? Primary : Border, filled ? Violet : Color.FromArgb(42, 50, 79));
         }
 
         public static Button CreatePrimaryButton(string text, int width)
@@ -147,12 +147,12 @@ namespace AutoInsuranceWinForms
 
         public static Button CreateSecondaryButton(string text, int width)
         {
-            return BuildButton(text, width, Color.White, Ink, Border, CardAlt);
+            return BuildButton(text, width, CardAlt, Ink, Border, Color.FromArgb(44, 53, 84));
         }
 
         public static Button CreateGhostButton(string text, int width)
         {
-            return BuildButton(text, width, Color.Transparent, Primary, Color.Transparent, Color.FromArgb(222, 238, 252));
+            return BuildButton(text, width, Color.Transparent, Accent, Color.Transparent, Color.FromArgb(40, 51, 86));
         }
 
         private static Button BuildButton(string text, int width, Color back, Color fore, Color border, Color hover)
@@ -161,16 +161,20 @@ namespace AutoInsuranceWinForms
             {
                 Text = text,
                 Width = width,
-                Height = 42,
+                Height = 44,
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
                 BackColor = back,
                 ForeColor = fore,
-                Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold),
+                Font = new Font("Bahnschrift SemiBold", 10F, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            b.FlatAppearance.BorderSize = border == Color.Transparent ? 0 : 1;
-            b.FlatAppearance.BorderColor = border;
+            bool hasBorder = border != Color.Transparent;
+            b.FlatAppearance.BorderSize = hasBorder ? 1 : 0;
+            if (hasBorder)
+            {
+                b.FlatAppearance.BorderColor = border;
+            }
             b.MouseEnter += delegate { b.BackColor = hover; };
             b.MouseLeave += delegate { b.BackColor = back; };
             return b;
@@ -190,15 +194,15 @@ namespace AutoInsuranceWinForms
             grid.EnableHeadersVisualStyles = false;
             grid.ColumnHeadersHeight = 44;
             grid.RowTemplate.Height = 36;
-            grid.GridColor = Color.FromArgb(229, 235, 244);
-            grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(235, 241, 249);
+            grid.GridColor = Color.FromArgb(54, 66, 100);
+            grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(42, 49, 78);
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Ink;
-            grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
-            grid.DefaultCellStyle.BackColor = Color.White;
+            grid.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift SemiBold", 10F, FontStyle.Bold);
+            grid.DefaultCellStyle.BackColor = Color.FromArgb(28, 34, 56);
             grid.DefaultCellStyle.ForeColor = Ink;
-            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 239, 255);
+            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(88, 58, 170);
             grid.DefaultCellStyle.SelectionForeColor = Ink;
-            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 251, 254);
+            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(33, 40, 64);
         }
     }
 }
