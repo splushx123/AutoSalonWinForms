@@ -30,10 +30,7 @@ namespace AutoInsuranceWinForms
             dashboard.Padding = new Padding(18);
             shell.Controls.Add(dashboard);
 
-            Label title = new Label { Text = BuildRoleTitle(), Dock = DockStyle.Top, Height = 34, Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold), ForeColor = Theme.Ink };
-            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 26, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F) };
-
-            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 230, Padding = new Padding(0, 8, 0, 12) };
+            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 250, Padding = new Padding(0, 0, 0, 12) };
             Label sideTitle = new Label { Text = "Статистика за период", Dock = DockStyle.Top, Height = 30, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Theme.Ink };
             Panel periodPanel = BuildPeriodPanel();
             _statsPanel.Dock = DockStyle.Fill;
@@ -57,8 +54,6 @@ namespace AutoInsuranceWinForms
             dashboard.Controls.Add(_modulesPanel);
             dashboard.Controls.Add(bottomActions);
             dashboard.Controls.Add(topStatsArea);
-            dashboard.Controls.Add(sub);
-            dashboard.Controls.Add(title);
 
             Panel ribbon = BuildRibbon();
             shell.Controls.Add(ribbon);
