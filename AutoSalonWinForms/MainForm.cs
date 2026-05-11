@@ -30,7 +30,7 @@ namespace AutoInsuranceWinForms
             dashboard.Padding = new Padding(18);
             shell.Controls.Add(dashboard);
 
-            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 250, Padding = new Padding(0, 0, 0, 12) };
+            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 190, Padding = new Padding(0, 0, 0, 8) };
             Label sideTitle = new Label { Text = "Статистика за период", Dock = DockStyle.Top, Height = 30, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Theme.Ink };
             Panel periodPanel = BuildPeriodPanel();
             _statsPanel.Dock = DockStyle.Fill;
@@ -95,13 +95,13 @@ namespace AutoInsuranceWinForms
 
         private Panel BuildPeriodPanel()
         {
-            Panel panel = new Panel { Dock = DockStyle.Top, Height = 64, Padding = new Padding(0, 0, 0, 6) };
+            Panel panel = new Panel { Dock = DockStyle.Top, Height = 56, Padding = new Padding(0, 0, 0, 4) };
 
             _dtFrom.Value = DateTime.Today.AddMonths(-1);
             _dtTo.Value = DateTime.Today;
 
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 32, WrapContents = false, FlowDirection = FlowDirection.LeftToRight };
-            row.Controls.Add(new Label { Text = "Период:", Width = 56, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
+            row.Controls.Add(new Label { Text = "Период с:", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtFrom);
             row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtTo);
@@ -186,22 +186,22 @@ namespace AutoInsuranceWinForms
         {
             if (!visible) return;
             RoundedPanel card = Theme.CreateCard(18);
-            card.Width = 320;
-            card.Height = 206;
-            card.Margin = new Padding(0, 0, 18, 18);
+            card.Width = 300;
+            card.Height = 162;
+            card.Margin = new Padding(0, 0, 14, 14);
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
-            Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 34, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold) };
+            Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold) };
             Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), AutoEllipsis = true };
-            Button open = Theme.CreatePrimaryButton("Открыть модуль", 160, false);
+            Button open = Theme.CreatePrimaryButton("Открыть модуль", 138, false);
             open.Anchor = AnchorStyles.Left;
             open.Click += delegate { action(); };
 
-            TableLayoutPanel inner = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(18, 14, 14, 14), ColumnCount = 1, RowCount = 4 };
-            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 24F));
-            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
+            TableLayoutPanel inner = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(14, 10, 10, 10), ColumnCount = 1, RowCount = 4 };
+            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 32F));
             inner.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 46F));
+            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
             inner.Controls.Add(no, 0, 0);
             inner.Controls.Add(h, 0, 1);
             inner.Controls.Add(d, 0, 2);
@@ -213,9 +213,9 @@ namespace AutoInsuranceWinForms
 
         private void AddGauge(string title, string value, Color color)
         {
-            RoundedPanel item = new RoundedPanel { Width = 250, Height = 116, BackColor = Theme.CardAlt, Radius = 16, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 10, 0), Padding = new Padding(12) };
+            RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 14, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 8, 0), Padding = new Padding(10) };
             Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
-            Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 38, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 14F : 20F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
+            Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 12F : 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             item.Controls.Add(v);
             item.Controls.Add(t);
