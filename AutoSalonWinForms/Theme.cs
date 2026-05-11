@@ -47,20 +47,20 @@ namespace AutoInsuranceWinForms
 
     public static class Theme
     {
-        public static readonly Color AppBack = Color.FromArgb(11, 14, 26);
-        public static readonly Color Surface = Color.FromArgb(19, 23, 39);
-        public static readonly Color Card = Color.FromArgb(24, 29, 48);
-        public static readonly Color CardAlt = Color.FromArgb(32, 38, 61);
-        public static readonly Color Ink = Color.FromArgb(222, 238, 255);
-        public static readonly Color Muted = Color.FromArgb(141, 167, 195);
-        public static readonly Color Border = Color.FromArgb(73, 88, 123);
-        public static readonly Color Primary = Color.FromArgb(135, 74, 255);
-        public static readonly Color PrimaryDark = Color.FromArgb(74, 38, 159);
-        public static readonly Color Accent = Color.FromArgb(0, 229, 255);
-        public static readonly Color Danger = Color.FromArgb(255, 91, 141);
-        public static readonly Color Success = Color.FromArgb(0, 255, 170);
-        public static readonly Color Warning = Color.FromArgb(255, 199, 61);
-        public static readonly Color Violet = Color.FromArgb(191, 122, 255);
+        public static readonly Color AppBack = Color.FromArgb(242, 246, 252);
+        public static readonly Color Surface = Color.FromArgb(235, 241, 249);
+        public static readonly Color Card = Color.FromArgb(255, 255, 255);
+        public static readonly Color CardAlt = Color.FromArgb(247, 250, 255);
+        public static readonly Color Ink = Color.FromArgb(28, 41, 61);
+        public static readonly Color Muted = Color.FromArgb(96, 114, 138);
+        public static readonly Color Border = Color.FromArgb(207, 219, 235);
+        public static readonly Color Primary = Color.FromArgb(50, 112, 220);
+        public static readonly Color PrimaryDark = Color.FromArgb(32, 84, 179);
+        public static readonly Color Accent = Color.FromArgb(34, 156, 194);
+        public static readonly Color Danger = Color.FromArgb(198, 72, 96);
+        public static readonly Color Success = Color.FromArgb(36, 154, 112);
+        public static readonly Color Warning = Color.FromArgb(222, 150, 54);
+        public static readonly Color Violet = Color.FromArgb(99, 122, 214);
 
         public static void StyleForm(Form form)
         {
@@ -76,7 +76,7 @@ namespace AutoInsuranceWinForms
                 BackColor = Card,
                 Padding = new Padding(padding),
                 Margin = new Padding(10),
-                Radius = 18,
+                Radius = 22,
                 StrokeColor = Border,
                 StrokeWidth = 1
             };
@@ -94,7 +94,7 @@ namespace AutoInsuranceWinForms
                 Width = width,
                 Height = 32,
                 BorderStyle = BorderStyle.FixedSingle,
-                Font = new Font("Consolas", 10F),
+                Font = new Font("Segoe UI", 10F),
                 BackColor = CardAlt,
                 ForeColor = Ink
             };
@@ -107,7 +107,7 @@ namespace AutoInsuranceWinForms
                 Width = width,
                 Height = 32,
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = new Font("Consolas", 10F),
+                Font = new Font("Segoe UI", 10F),
                 BackColor = CardAlt,
                 ForeColor = Ink
             };
@@ -147,12 +147,12 @@ namespace AutoInsuranceWinForms
 
         public static Button CreateSecondaryButton(string text, int width)
         {
-            return BuildButton(text, width, CardAlt, Ink, Border, Color.FromArgb(44, 53, 84));
+            return BuildButton(text, width, Color.White, Ink, Border, Color.FromArgb(235, 242, 252));
         }
 
         public static Button CreateGhostButton(string text, int width)
         {
-            return BuildButton(text, width, Color.Transparent, Accent, Color.Transparent, Color.FromArgb(40, 51, 86));
+            return BuildButton(text, width, Color.Transparent, Primary, Color.Transparent, Color.FromArgb(226, 238, 252));
         }
 
         private static Button BuildButton(string text, int width, Color back, Color fore, Color border, Color hover)
@@ -166,7 +166,7 @@ namespace AutoInsuranceWinForms
                 Cursor = Cursors.Hand,
                 BackColor = back,
                 ForeColor = fore,
-                Font = new Font("Bahnschrift SemiBold", 10F, FontStyle.Bold),
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter
             };
             bool hasBorder = border != Color.Transparent;
@@ -192,17 +192,17 @@ namespace AutoInsuranceWinForms
             grid.MultiSelect = false;
             grid.RowHeadersVisible = false;
             grid.EnableHeadersVisualStyles = false;
-            grid.ColumnHeadersHeight = 44;
+            grid.ColumnHeadersHeight = 42;
             grid.RowTemplate.Height = 36;
-            grid.GridColor = Color.FromArgb(54, 66, 100);
-            grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(42, 49, 78);
+            grid.GridColor = Color.FromArgb(221, 230, 242);
+            grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(232, 240, 250);
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Ink;
-            grid.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift SemiBold", 10F, FontStyle.Bold);
-            grid.DefaultCellStyle.BackColor = Color.FromArgb(28, 34, 56);
+            grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
+            grid.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 255);
             grid.DefaultCellStyle.ForeColor = Ink;
-            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(88, 58, 170);
+            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(214, 232, 255);
             grid.DefaultCellStyle.SelectionForeColor = Ink;
-            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(33, 40, 64);
+            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(246, 250, 255);
         }
     }
 }
