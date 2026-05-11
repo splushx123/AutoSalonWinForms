@@ -46,7 +46,7 @@ namespace AutoInsuranceWinForms
 
             FlowLayoutPanel bottomActions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 52, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, Padding = new Padding(0, 6, 0, 0) };
             Button exitButton = Theme.CreatePrimaryButton("Выйти", 120);
-            exitButton.Click += delegate { ReturnToLogin = false; Close(); };
+            exitButton.Click += delegate { ReturnToLogin = true; Close(); };
             bottomActions.Controls.Add(exitButton);
 
                         _modulesPanel.Dock = DockStyle.Fill;
