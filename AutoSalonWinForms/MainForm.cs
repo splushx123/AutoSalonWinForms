@@ -30,10 +30,10 @@ namespace AutoInsuranceWinForms
             dashboard.Padding = new Padding(18);
             shell.Controls.Add(dashboard);
 
-            Label title = new Label { Text = BuildRoleTitle(), Dock = DockStyle.Top, Height = 42, Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold), ForeColor = Theme.Ink };
-            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 36, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F) };
+            Label title = new Label { Text = BuildRoleTitle(), Dock = DockStyle.Top, Height = 34, Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold), ForeColor = Theme.Ink };
+            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 26, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F) };
 
-            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 170, Padding = new Padding(0, 8, 0, 12) };
+            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 230, Padding = new Padding(0, 8, 0, 12) };
             Label sideTitle = new Label { Text = "Статистика за период", Dock = DockStyle.Top, Height = 30, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Theme.Ink };
             Panel periodPanel = BuildPeriodPanel();
             _statsPanel.Dock = DockStyle.Fill;
@@ -72,7 +72,7 @@ namespace AutoInsuranceWinForms
 
             Label logo = new Label
             {
-                Text = "AutoSalon",
+                Text = "Автосалон",
                 Dock = DockStyle.Left,
                 Width = 170,
                 ForeColor = Theme.Ink,
@@ -82,11 +82,11 @@ namespace AutoInsuranceWinForms
 
             Label user = new Label
             {
-                Text = _user.FullName + "\n" + _user.Email,
+                Text = BuildRoleTitle(),
                 Dock = DockStyle.Left,
-                Width = 480,
+                Width = 760,
                 ForeColor = Theme.Muted,
-                Font = new Font("Segoe UI", 10F),
+                Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
@@ -197,7 +197,7 @@ namespace AutoInsuranceWinForms
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
             Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 34, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold) };
-            Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F), AutoEllipsis = true };
+            Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), AutoEllipsis = true };
             Button open = Theme.CreatePrimaryButton("Открыть модуль", 160, false);
             open.Anchor = AnchorStyles.Left;
             open.Click += delegate { action(); };
@@ -218,10 +218,10 @@ namespace AutoInsuranceWinForms
 
         private void AddGauge(string title, string value, Color color)
         {
-            RoundedPanel item = new RoundedPanel { Width = 250, Height = 96, BackColor = Theme.CardAlt, Radius = 16, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 10, 0), Padding = new Padding(12) };
+            RoundedPanel item = new RoundedPanel { Width = 250, Height = 116, BackColor = Theme.CardAlt, Radius = 16, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 10, 0), Padding = new Padding(12) };
             Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
             Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 38, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 14F : 20F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
-            Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F), TextAlign = ContentAlignment.MiddleLeft };
+            Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             item.Controls.Add(v);
             item.Controls.Add(t);
             item.Controls.Add(dot);
