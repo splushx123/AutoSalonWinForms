@@ -37,7 +37,7 @@ namespace AutoInsuranceWinForms
             content.Controls.Add(workspace, 0, 0);
 
             Label title = new Label { Text = BuildRoleTitle(), Dock = DockStyle.Top, Height = 44, Font = new Font("Segoe UI Semibold", 20F, FontStyle.Bold), ForeColor = Theme.Ink };
-            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 56, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10.5F) };
+            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 44, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F) };
             _modulesPanel.Dock = DockStyle.Fill;
             _modulesPanel.AutoScroll = true;
             _modulesPanel.WrapContents = true;
@@ -163,20 +163,25 @@ namespace AutoInsuranceWinForms
             if (!visible) return;
             RoundedPanel card = Theme.CreateCard(18);
             card.Width = 350;
-            card.Height = 178;
+            card.Height = 188;
             card.Margin = new Padding(0, 0, 18, 18);
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
             Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 34, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold) };
-            Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F) };
+            Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F), AutoEllipsis = true };
             Button open = Theme.CreatePrimaryButton("Открыть модуль", 160, false);
-            open.Dock = DockStyle.Bottom;
+            open.Anchor = AnchorStyles.Left;
             open.Click += delegate { action(); };
-            Panel inner = new Panel { Dock = DockStyle.Fill, Padding = new Padding(18, 14, 14, 14) };
-            inner.Controls.Add(open);
-            inner.Controls.Add(d);
-            inner.Controls.Add(h);
-            inner.Controls.Add(no);
+
+            TableLayoutPanel inner = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(18, 14, 14, 14), ColumnCount = 1, RowCount = 4 };
+            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 24F));
+            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F));
+            inner.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 46F));
+            inner.Controls.Add(no, 0, 0);
+            inner.Controls.Add(h, 0, 1);
+            inner.Controls.Add(d, 0, 2);
+            inner.Controls.Add(open, 0, 3);
             card.Controls.Add(inner);
             card.Controls.Add(mark);
             _modulesPanel.Controls.Add(card);
