@@ -20,38 +20,38 @@ namespace AutoInsuranceWinForms
             WindowState = FormWindowState.Maximized;
             StartPosition = FormStartPosition.CenterScreen;
 
-            Panel shell = new Panel { Dock = DockStyle.Fill, Padding = new Padding(28), BackColor = Theme.AppBack };
+            Panel shell = new Panel { Dock = DockStyle.Fill, Padding = new Padding(20), BackColor = Theme.AppBack };
             Controls.Add(shell);
 
             Panel ribbon = BuildRibbon();
             shell.Controls.Add(ribbon);
 
-            TableLayoutPanel content = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(0, 24, 0, 0) };
-            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 68));
-            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32));
+            TableLayoutPanel content = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(0, 16, 0, 0) };
+            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70));
+            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
             shell.Controls.Add(content);
 
-            RoundedPanel workspace = Theme.CreateCard(22);
+            RoundedPanel workspace = Theme.CreateCard(24);
             workspace.Dock = DockStyle.Fill;
             workspace.Margin = new Padding(0, 0, 14, 0);
             content.Controls.Add(workspace, 0, 0);
 
-            Label title = new Label { Text = BuildRoleTitle(), Dock = DockStyle.Top, Height = 42, Font = new Font("Segoe UI Semibold", 22F, FontStyle.Bold), ForeColor = Theme.Ink };
-            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 52, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10.5F) };
+            Label title = new Label { Text = BuildRoleTitle(), Dock = DockStyle.Top, Height = 44, Font = new Font("Segoe UI Semibold", 20F, FontStyle.Bold), ForeColor = Theme.Ink };
+            Label sub = new Label { Text = BuildAccessText(), Dock = DockStyle.Top, Height = 56, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10.5F) };
             _modulesPanel.Dock = DockStyle.Fill;
             _modulesPanel.AutoScroll = true;
             _modulesPanel.WrapContents = true;
-            _modulesPanel.Padding = new Padding(0, 8, 0, 0);
+            _modulesPanel.Padding = new Padding(0, 12, 0, 0);
             workspace.Controls.Add(_modulesPanel);
             workspace.Controls.Add(sub);
             workspace.Controls.Add(title);
 
-            RoundedPanel side = Theme.CreateCard(20);
+            RoundedPanel side = Theme.CreateCard(22);
             side.Dock = DockStyle.Fill;
             side.Margin = new Padding(14, 0, 0, 0);
             content.Controls.Add(side, 1, 0);
 
-            Label sideTitle = new Label { Text = "Сводка системы", Dock = DockStyle.Top, Height = 38, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), ForeColor = Theme.Ink };
+            Label sideTitle = new Label { Text = "Сводка по системе", Dock = DockStyle.Top, Height = 40, Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold), ForeColor = Theme.Ink };
             _statsPanel.Dock = DockStyle.Fill;
             _statsPanel.FlowDirection = FlowDirection.TopDown;
             _statsPanel.WrapContents = false;
@@ -68,22 +68,45 @@ namespace AutoInsuranceWinForms
 
         private Panel BuildRibbon()
         {
-            Panel ribbon = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Theme.Ink, Padding = new Padding(24, 14, 24, 14) };
-            Label logo = new Label { Text = "AUTO\nSALON", Dock = DockStyle.Left, Width = 128, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
-            Label user = new Label { Text = _user.FullName + "\n" + _user.Email, Dock = DockStyle.Left, Width = 360, ForeColor = Color.FromArgb(193, 214, 236), Font = new Font("Segoe UI", 10F), TextAlign = ContentAlignment.MiddleLeft };
-            Button logout = Theme.CreatePrimaryButton("Сменить пользователя", 190);
+            Panel ribbon = new Panel { Dock = DockStyle.Top, Height = 86, BackColor = Theme.Card, Padding = new Padding(20, 12, 20, 12) };
+
+            Label logo = new Label
+            {
+                Text = "AutoSalon",
+                Dock = DockStyle.Left,
+                Width = 170,
+                ForeColor = Theme.Ink,
+                Font = new Font("Segoe UI Semibold", 20F, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+
+            Label user = new Label
+            {
+                Text = _user.FullName + "\n" + _user.Email,
+                Dock = DockStyle.Left,
+                Width = 360,
+                ForeColor = Theme.Muted,
+                Font = new Font("Segoe UI", 10F),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+
+            Button logout = Theme.CreatePrimaryButton("Сменить пользователя", 210);
             logout.Dock = DockStyle.Right;
-            logout.Margin = new Padding(8);
             logout.Click += delegate { ReturnToLogin = true; Close(); };
+
             _clock.Dock = DockStyle.Right;
-            _clock.Width = 190;
-            _clock.ForeColor = Color.FromArgb(193, 214, 236);
+            _clock.Width = 170;
+            _clock.ForeColor = Theme.Muted;
             _clock.TextAlign = ContentAlignment.MiddleRight;
             _clock.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+
+            Panel divider = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = Theme.Border };
+
             ribbon.Controls.Add(logout);
             ribbon.Controls.Add(_clock);
             ribbon.Controls.Add(user);
             ribbon.Controls.Add(logo);
+            ribbon.Controls.Add(divider);
             return ribbon;
         }
 
@@ -139,17 +162,17 @@ namespace AutoInsuranceWinForms
         {
             if (!visible) return;
             RoundedPanel card = Theme.CreateCard(18);
-            card.Width = 330;
-            card.Height = 168;
+            card.Width = 350;
+            card.Height = 178;
             card.Margin = new Padding(0, 0, 18, 18);
-            Panel mark = new Panel { Dock = DockStyle.Left, Width = 8, BackColor = color };
-            Label no = new Label { Text = num, Dock = DockStyle.Top, Height = 26, ForeColor = color, Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleRight };
-            Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 36, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold) };
+            Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
+            Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
+            Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 34, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold) };
             Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10F) };
-            Button open = Theme.CreateGhostButton("Открыть модуль", 144);
+            Button open = Theme.CreatePrimaryButton("Открыть модуль", 160, false);
             open.Dock = DockStyle.Bottom;
             open.Click += delegate { action(); };
-            Panel inner = new Panel { Dock = DockStyle.Fill, Padding = new Padding(16, 12, 14, 12) };
+            Panel inner = new Panel { Dock = DockStyle.Fill, Padding = new Padding(18, 14, 14, 14) };
             inner.Controls.Add(open);
             inner.Controls.Add(d);
             inner.Controls.Add(h);
@@ -161,9 +184,9 @@ namespace AutoInsuranceWinForms
 
         private void AddGauge(string title, string value, Color color)
         {
-            RoundedPanel item = new RoundedPanel { Width = 340, Height = 92, BackColor = Theme.CardAlt, Radius = 20, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 0, 12), Padding = new Padding(16) };
-            Panel dot = new Panel { Width = 14, Dock = DockStyle.Left, BackColor = color };
-            Label v = new Label { Text = value, Dock = DockStyle.Right, Width = 150, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 8 ? 15F : 24F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleRight };
+            RoundedPanel item = new RoundedPanel { Width = 340, Height = 86, BackColor = Theme.CardAlt, Radius = 18, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 0, 10), Padding = new Padding(14) };
+            Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
+            Label v = new Label { Text = value, Dock = DockStyle.Right, Width = 160, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 8 ? 15F : 22F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleRight };
             Label t = new Label { Text = title, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 11F), TextAlign = ContentAlignment.MiddleLeft };
             item.Controls.Add(v);
             item.Controls.Add(t);
