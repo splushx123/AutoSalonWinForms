@@ -10,6 +10,9 @@ namespace AutoInsuranceWinForms
         private readonly FlowLayoutPanel _statsPanel = new FlowLayoutPanel();
         private readonly FlowLayoutPanel _modulesPanel = new FlowLayoutPanel();
         private readonly Label _clock = new Label();
+        private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(120);
+        private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(120);
+        private readonly Label _periodHint = new Label();
         public bool ReturnToLogin { get; private set; }
 
         public MainForm(UserAccount user)
@@ -52,18 +55,20 @@ namespace AutoInsuranceWinForms
             content.Controls.Add(side, 1, 0);
 
             Label sideTitle = new Label { Text = "Сводка по системе", Dock = DockStyle.Top, Height = 40, Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold), ForeColor = Theme.Ink };
+            Panel periodPanel = BuildPeriodPanel();
             _statsPanel.Dock = DockStyle.Fill;
             _statsPanel.FlowDirection = FlowDirection.TopDown;
             _statsPanel.WrapContents = false;
             _statsPanel.AutoScroll = true;
             side.Controls.Add(_statsPanel);
+            side.Controls.Add(periodPanel);
             side.Controls.Add(sideTitle);
 
             Timer t = new Timer { Interval = 1000 };
             t.Tick += delegate { _clock.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm"); };
             t.Start();
 
-            Load += delegate { FillStats(); FillModules(); };
+            Load += delegate { FillModules(); ApplyPeriodAndRefreshStats(); };
         }
 
         private Panel BuildRibbon()
@@ -110,6 +115,45 @@ namespace AutoInsuranceWinForms
             return ribbon;
         }
 
+        private Panel BuildPeriodPanel()
+        {
+            Panel panel = new Panel { Dock = DockStyle.Top, Height = 86, Padding = new Padding(0, 0, 0, 8) };
+
+            _dtFrom.Value = DateTime.Today.AddMonths(-1);
+            _dtTo.Value = DateTime.Today;
+
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 36, WrapContents = false, FlowDirection = FlowDirection.LeftToRight };
+            row.Controls.Add(new Label { Text = "Период:", Width = 56, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
+            row.Controls.Add(_dtFrom);
+            row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
+            row.Controls.Add(_dtTo);
+
+            Button apply = Theme.CreateSecondaryButton("Показать", 96);
+            apply.Height = 32;
+            apply.Click += delegate { ApplyPeriodAndRefreshStats(); };
+            row.Controls.Add(apply);
+
+            _periodHint.Dock = DockStyle.Top;
+            _periodHint.Height = 26;
+            _periodHint.ForeColor = Theme.Muted;
+            _periodHint.Font = new Font("Segoe UI", 9F);
+
+            panel.Controls.Add(_periodHint);
+            panel.Controls.Add(row);
+            return panel;
+        }
+
+        private void ApplyPeriodAndRefreshStats()
+        {
+            if (_dtTo.Value.Date < _dtFrom.Value.Date)
+            {
+                MessageBox.Show("Дата окончания периода не может быть раньше даты начала.", "Период", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            _periodHint.Text = "Сделки/выручка/тест-драйвы за период: " + _dtFrom.Value.ToString("dd.MM.yyyy") + " — " + _dtTo.Value.ToString("dd.MM.yyyy");
+            FillStats();
+        }
+
         private string BuildRoleTitle()
         {
             if (_user.Role == UserRole.DepartmentHead) return "Командный центр руководителя отдела продаж";
@@ -131,11 +175,13 @@ namespace AutoInsuranceWinForms
         private void FillStats()
         {
             _statsPanel.Controls.Clear();
+            string from = _dtFrom.Value.Date.ToString("yyyy-MM-dd");
+            string to = _dtTo.Value.Date.AddDays(1).ToString("yyyy-MM-dd");
             AddGauge("Клиенты", SafeCount("SELECT COUNT(*) FROM dbo.Client").ToString(), Theme.Primary);
             AddGauge("Автомобили", SafeCount("SELECT COUNT(*) FROM dbo.Car").ToString(), Theme.Success);
-            AddGauge("Сделки", SafeCount("SELECT COUNT(*) FROM dbo.Deal").ToString(), Theme.Warning);
-            AddGauge("Выручка", SafeMoney("SELECT ISNULL(SUM(final_price),0) FROM dbo.Deal") + " руб.", Theme.Violet);
-            AddGauge("Тест-драйвы", SafeCount("SELECT COUNT(*) FROM dbo.TestDrive").ToString(), Theme.Accent);
+            AddGauge("Сделки", SafeCount($"SELECT COUNT(*) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'").ToString(), Theme.Warning);
+            AddGauge("Выручка", SafeMoney($"SELECT ISNULL(SUM(final_price),0) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'") + " руб.", Theme.Violet);
+            AddGauge("Тест-драйвы", SafeCount($"SELECT COUNT(*) FROM dbo.TestDrive WHERE planned_start >= '{from}' AND planned_start < '{to}'").ToString(), Theme.Accent);
         }
 
         private int SafeCount(string sql) { try { return Db.Count(sql); } catch { return 0; } }
@@ -203,7 +249,7 @@ namespace AutoInsuranceWinForms
         {
             LogService.Log("Открытие модуля", name);
             using (form) form.ShowDialog(this);
-            FillStats();
+            ApplyPeriodAndRefreshStats();
         }
     }
 }
