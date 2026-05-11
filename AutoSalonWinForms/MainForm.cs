@@ -95,18 +95,18 @@ namespace AutoInsuranceWinForms
 
         private Panel BuildPeriodPanel()
         {
-            Panel panel = new Panel { Dock = DockStyle.Top, Height = 56, Padding = new Padding(0, 0, 0, 4) };
+            Panel panel = new Panel { Dock = DockStyle.Top, Height = 60, Padding = new Padding(8, 0, 0, 4) };
 
             _dtFrom.Value = DateTime.Today.AddMonths(-1);
             _dtTo.Value = DateTime.Today;
 
-            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 32, WrapContents = false, FlowDirection = FlowDirection.LeftToRight };
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 34, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, AutoSize = false };
             row.Controls.Add(new Label { Text = "Период с:", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtFrom);
             row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtTo);
 
-            Button apply = Theme.CreateSecondaryButton("Показать", 92);
+            Button apply = Theme.CreateSecondaryButton("Показать", 110);
             apply.Height = 32;
             apply.Click += delegate { ApplyPeriodAndRefreshStats(); };
             row.Controls.Add(apply);
@@ -187,13 +187,13 @@ namespace AutoInsuranceWinForms
             if (!visible) return;
             RoundedPanel card = Theme.CreateCard(18);
             card.Width = 300;
-            card.Height = 162;
+            card.Height = 176;
             card.Margin = new Padding(0, 0, 14, 14);
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
             Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold) };
             Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), AutoEllipsis = true };
-            Button open = Theme.CreatePrimaryButton("Открыть модуль", 138, false);
+            Button open = Theme.CreatePrimaryButton("Открыть модуль", 126, false);
             open.Anchor = AnchorStyles.Left;
             open.Click += delegate { action(); };
 
