@@ -9,8 +9,8 @@ namespace AutoInsuranceWinForms
         private readonly UserAccount _user;
         private readonly FlowLayoutPanel _statsPanel = new FlowLayoutPanel();
         private readonly FlowLayoutPanel _modulesPanel = new FlowLayoutPanel();
-        private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(120);
-        private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(120);
+        private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(96);
+        private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(96);
         private readonly Label _periodHint = new Label();
         public bool ReturnToLogin { get; private set; }
 
@@ -95,7 +95,7 @@ namespace AutoInsuranceWinForms
 
         private Panel BuildPeriodPanel()
         {
-            Panel panel = new Panel { Dock = DockStyle.Top, Height = 58, Padding = new Padding(0, 0, 0, 4) };
+            Panel panel = new Panel { Dock = DockStyle.Top, Height = 64, Padding = new Padding(0, 0, 0, 6) };
 
             _dtFrom.Value = DateTime.Today.AddMonths(-1);
             _dtTo.Value = DateTime.Today;
@@ -106,7 +106,7 @@ namespace AutoInsuranceWinForms
             row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtTo);
 
-            Button apply = Theme.CreateSecondaryButton("Показать", 96);
+            Button apply = Theme.CreateSecondaryButton("Показать", 92);
             apply.Height = 32;
             apply.Click += delegate { ApplyPeriodAndRefreshStats(); };
             row.Controls.Add(apply);
@@ -187,7 +187,7 @@ namespace AutoInsuranceWinForms
             if (!visible) return;
             RoundedPanel card = Theme.CreateCard(18);
             card.Width = 320;
-            card.Height = 188;
+            card.Height = 206;
             card.Margin = new Padding(0, 0, 18, 18);
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
