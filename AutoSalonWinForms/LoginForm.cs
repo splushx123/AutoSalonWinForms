@@ -11,6 +11,7 @@ namespace AutoInsuranceWinForms
         private readonly CheckBox _chkRemember = new CheckBox();
         private readonly Label _lblError = new Label();
         private readonly string _rememberFile = Path.Combine(Application.StartupPath, "last_email.txt");
+        private readonly string _rememberPasswordFile = Path.Combine(Application.StartupPath, "last_password.txt");
 
         public UserAccount CurrentUser { get; private set; }
 
@@ -39,7 +40,11 @@ namespace AutoInsuranceWinForms
             if (File.Exists(_rememberFile))
             {
                 _txtEmail.Text = File.ReadAllText(_rememberFile).Trim();
-                _chkRemember.Checked = _txtEmail.Text.Length > 0;
+                if (File.Exists(_rememberPasswordFile))
+                {
+                    _txtPassword.Text = File.ReadAllText(_rememberPasswordFile);
+                    _chkRemember.Checked = _txtPassword.Text.Length > 0;
+                }
             }
             else _txtEmail.Text = "head@autosalon.local";
             AcceptButton = FindLoginButton(loginCard);
@@ -119,8 +124,16 @@ namespace AutoInsuranceWinForms
                 MessageBox.Show("Не удалось подключиться к SQL Server.\n\n" + error, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (_chkRemember.Checked) File.WriteAllText(_rememberFile, _txtEmail.Text.Trim());
-            else if (File.Exists(_rememberFile)) File.Delete(_rememberFile);
+            if (_chkRemember.Checked)
+            {
+                File.WriteAllText(_rememberFile, _txtEmail.Text.Trim());
+                File.WriteAllText(_rememberPasswordFile, _txtPassword.Text);
+            }
+            else
+            {
+                if (File.Exists(_rememberFile)) File.Delete(_rememberFile);
+                if (File.Exists(_rememberPasswordFile)) File.Delete(_rememberPasswordFile);
+            }
             LogService.Log("Авторизация", CurrentUser.Email + " | " + CurrentUser.FullName);
             DialogResult = DialogResult.OK;
             Close();
