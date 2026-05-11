@@ -26,7 +26,7 @@ namespace AutoInsuranceWinForms
             Panel canvas = new Panel { Dock = DockStyle.Fill, Padding = new Padding(34), BackColor = Theme.AppBack };
             Controls.Add(canvas);
 
-            Panel topStrip = new Panel { Dock = DockStyle.Top, Height = 68, BackColor = Theme.Ink, Padding = new Padding(26, 12, 26, 10) };
+            Panel topStrip = new Panel { Dock = DockStyle.Top, Height = 68, BackColor = Theme.Primary, Padding = new Padding(26, 12, 26, 10) };
             Label brand = new Label
             {
                 Text = "AutoSalon Control Center",
@@ -41,7 +41,7 @@ namespace AutoInsuranceWinForms
                 Text = "CRM / склад / продажи / сервис",
                 Dock = DockStyle.Right,
                 Width = 330,
-                ForeColor = Color.FromArgb(178, 203, 230),
+                ForeColor = Color.FromArgb(214, 231, 255),
                 TextAlign = ContentAlignment.MiddleRight
             };
             topStrip.Controls.Add(version);
@@ -55,8 +55,8 @@ namespace AutoInsuranceWinForms
 
             RoundedPanel cockpit = Theme.CreateCard(26);
             cockpit.Dock = DockStyle.Fill;
-            cockpit.BackColor = Color.FromArgb(18, 30, 52);
-            cockpit.StrokeColor = Color.FromArgb(50, 76, 112);
+            cockpit.BackColor = Theme.Card;
+            cockpit.StrokeColor = Theme.Border;
             cockpit.Margin = new Padding(0, 0, 18, 0);
             grid.Controls.Add(cockpit, 0, 0);
 
@@ -65,7 +65,7 @@ namespace AutoInsuranceWinForms
                 Text = "Панель автосалона",
                 Dock = DockStyle.Top,
                 Height = 50,
-                ForeColor = Color.White,
+                ForeColor = Theme.Primary,
                 Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold)
             };
             Label cockpitText = new Label
@@ -73,7 +73,7 @@ namespace AutoInsuranceWinForms
                 Text = "После входа система откроет рабочее место по роли пользователя: продажи, склад, сервис, отчеты или администрирование.",
                 Dock = DockStyle.Top,
                 Height = 74,
-                ForeColor = Color.FromArgb(197, 214, 232),
+                ForeColor = Theme.Muted,
                 Font = new Font("Segoe UI", 11F)
             };
             FlowLayoutPanel chips = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 92, FlowDirection = FlowDirection.LeftToRight };
@@ -84,17 +84,17 @@ namespace AutoInsuranceWinForms
             RoundedPanel hero = new RoundedPanel
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(25, 48, 83),
+                BackColor = Color.FromArgb(237, 244, 255),
                 Radius = 34,
-                StrokeColor = Color.FromArgb(61, 101, 146),
+                StrokeColor = Color.FromArgb(194, 214, 242),
                 Padding = new Padding(24),
                 Margin = new Padding(0, 22, 0, 0)
             };
             hero.Controls.Add(new Label
             {
-                Text = "Новый интерфейс не использует оформление примера: нет прежнего меню и компоновки, вместо этого — командный центр с карточками, лентой и рабочими зонами.",
+                Text = "После входа откроются рабочие разделы автосалона: продажи, склад, сервис, отчеты и администрирование. Интерфейс адаптирован для комфортной ежедневной работы.",
                 Dock = DockStyle.Fill,
-                ForeColor = Color.FromArgb(220, 233, 248),
+                ForeColor = Theme.Ink,
                 Font = new Font("Segoe UI", 12F),
                 TextAlign = ContentAlignment.MiddleCenter
             });
@@ -126,9 +126,9 @@ namespace AutoInsuranceWinForms
 
         private Control MetricChip(string big, string small)
         {
-            RoundedPanel p = new RoundedPanel { Width = 112, Height = 76, Radius = 18, BackColor = Color.FromArgb(31, 57, 94), StrokeColor = Color.FromArgb(65, 105, 149), Margin = new Padding(0, 0, 12, 0), Padding = new Padding(12) };
-            p.Controls.Add(new Label { Text = small, Dock = DockStyle.Bottom, Height = 24, ForeColor = Color.FromArgb(164, 190, 219), TextAlign = ContentAlignment.MiddleCenter });
-            p.Controls.Add(new Label { Text = big, Dock = DockStyle.Fill, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter });
+            RoundedPanel p = new RoundedPanel { Width = 112, Height = 76, Radius = 18, BackColor = Color.FromArgb(239, 246, 255), StrokeColor = Color.FromArgb(198, 218, 242), Margin = new Padding(0, 0, 12, 0), Padding = new Padding(12) };
+            p.Controls.Add(new Label { Text = small, Dock = DockStyle.Bottom, Height = 24, ForeColor = Theme.Muted, TextAlign = ContentAlignment.MiddleCenter });
+            p.Controls.Add(new Label { Text = big, Dock = DockStyle.Fill, ForeColor = Theme.Primary, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter });
             return p;
         }
 
@@ -166,7 +166,7 @@ namespace AutoInsuranceWinForms
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 58, FlowDirection = FlowDirection.LeftToRight, WrapContents = false };
             Button btnLogin = Theme.CreatePrimaryButton("Войти", 150);
             Button btnTest = Theme.CreateSecondaryButton("Проверить SQL", 150);
-            Button btnClose = Theme.CreateGhostButton("Закрыть", 110);
+            Button btnClose = Theme.CreateGhostButton("Закрыть", 120);
             btnLogin.Name = "btnLogin";
             btnLogin.Click += delegate { DoLogin(); };
             btnTest.Click += delegate { TestConnection(); };
