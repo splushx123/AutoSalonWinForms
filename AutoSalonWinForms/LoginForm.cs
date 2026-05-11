@@ -21,98 +21,19 @@ namespace AutoInsuranceWinForms
             StartPosition = FormStartPosition.CenterScreen;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
-            ClientSize = new Size(1040, 620);
+            ClientSize = new Size(620, 460);
 
-            Panel canvas = new Panel { Dock = DockStyle.Fill, Padding = new Padding(34), BackColor = Theme.AppBack };
+            Panel canvas = new Panel { Dock = DockStyle.Fill, Padding = new Padding(24), BackColor = Theme.AppBack };
             Controls.Add(canvas);
 
-            Panel topStrip = new Panel { Dock = DockStyle.Top, Height = 68, BackColor = Theme.Primary, Padding = new Padding(26, 12, 26, 10) };
-            Label brand = new Label
-            {
-                Text = "AutoSalon Control Center",
-                Dock = DockStyle.Left,
-                Width = 420,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold),
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            Label version = new Label
-            {
-                Text = "CRM / склад / продажи / сервис",
-                Dock = DockStyle.Right,
-                Width = 330,
-                ForeColor = Color.FromArgb(214, 231, 255),
-                TextAlign = ContentAlignment.MiddleRight
-            };
-            topStrip.Controls.Add(version);
-            topStrip.Controls.Add(brand);
-            canvas.Controls.Add(topStrip);
+            RoundedPanel loginCard = Theme.CreateCard(30);
+            loginCard.Size = new Size(520, 400);
+            loginCard.Location = new Point((ClientSize.Width - loginCard.Width) / 2, (ClientSize.Height - loginCard.Height) / 2);
+            canvas.Controls.Add(loginCard);
 
-            TableLayoutPanel grid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(0, 28, 0, 0) };
-            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 52));
-            grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 48));
-            canvas.Controls.Add(grid);
-
-            RoundedPanel cockpit = Theme.CreateCard(26);
-            cockpit.Dock = DockStyle.Fill;
-            cockpit.BackColor = Theme.Card;
-            cockpit.StrokeColor = Theme.Border;
-            cockpit.Margin = new Padding(0, 0, 18, 0);
-            grid.Controls.Add(cockpit, 0, 0);
-
-            Label cockpitTitle = new Label
-            {
-                Text = "Панель автосалона",
-                Dock = DockStyle.Top,
-                Height = 50,
-                ForeColor = Theme.Primary,
-                Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold)
-            };
-            Label cockpitText = new Label
-            {
-                Text = "После входа система откроет рабочее место по роли пользователя: продажи, склад, сервис, отчеты или администрирование.",
-                Dock = DockStyle.Top,
-                Height = 74,
-                ForeColor = Theme.Muted,
-                Font = new Font("Segoe UI", 11F)
-            };
-            FlowLayoutPanel chips = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 92, FlowDirection = FlowDirection.LeftToRight };
-            chips.Controls.Add(MetricChip("VIN", "склад"));
-            chips.Controls.Add(MetricChip("CRM", "клиенты"));
-            chips.Controls.Add(MetricChip("DEAL", "сделки"));
-            chips.Controls.Add(MetricChip("DRIVE", "тест"));
-            RoundedPanel hero = new RoundedPanel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(237, 244, 255),
-                Radius = 34,
-                StrokeColor = Color.FromArgb(194, 214, 242),
-                Padding = new Padding(24),
-                Margin = new Padding(0, 22, 0, 0)
-            };
-            hero.Controls.Add(new Label
-            {
-                Text = "После входа откроются рабочие разделы автосалона: продажи, склад, сервис, отчеты и администрирование. Интерфейс адаптирован для комфортной ежедневной работы.",
-                Dock = DockStyle.Fill,
-                ForeColor = Theme.Ink,
-                Font = new Font("Segoe UI", 12F),
-                TextAlign = ContentAlignment.MiddleCenter
-            });
-            cockpit.Controls.Add(hero);
-            cockpit.Controls.Add(chips);
-            cockpit.Controls.Add(cockpitText);
-            cockpit.Controls.Add(cockpitTitle);
-
-            RoundedPanel loginCard = Theme.CreateCard(34);
-            loginCard.Dock = DockStyle.Fill;
-            loginCard.Margin = new Padding(18, 0, 0, 0);
-            grid.Controls.Add(loginCard, 1, 0);
-
-            Label title = new Label { Text = "Авторизация", Dock = DockStyle.Top, Height = 48, Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold), ForeColor = Theme.Ink };
-            Label subtitle = new Label { Text = "Введите учетные данные из курсовой работы. Роль будет выбрана автоматически.", Dock = DockStyle.Top, Height = 58, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 10.5F) };
+            Label title = new Label { Text = "Авторизация", Dock = DockStyle.Top, Height = 56, Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold), ForeColor = Theme.Ink, TextAlign = ContentAlignment.MiddleLeft };
             loginCard.Controls.Add(BuildBottomButtons());
             loginCard.Controls.Add(BuildLoginFields());
-            loginCard.Controls.Add(subtitle);
             loginCard.Controls.Add(title);
 
             if (File.Exists(_rememberFile))
@@ -122,14 +43,6 @@ namespace AutoInsuranceWinForms
             }
             else _txtEmail.Text = "head@autosalon.local";
             AcceptButton = FindLoginButton(loginCard);
-        }
-
-        private Control MetricChip(string big, string small)
-        {
-            RoundedPanel p = new RoundedPanel { Width = 112, Height = 76, Radius = 18, BackColor = Color.FromArgb(239, 246, 255), StrokeColor = Color.FromArgb(198, 218, 242), Margin = new Padding(0, 0, 12, 0), Padding = new Padding(12) };
-            p.Controls.Add(new Label { Text = small, Dock = DockStyle.Bottom, Height = 24, ForeColor = Theme.Muted, TextAlign = ContentAlignment.MiddleCenter });
-            p.Controls.Add(new Label { Text = big, Dock = DockStyle.Fill, ForeColor = Theme.Primary, Font = new Font("Segoe UI Semibold", 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter });
-            return p;
         }
 
         private Control BuildLoginFields()
@@ -145,7 +58,7 @@ namespace AutoInsuranceWinForms
             _txtEmail.Dock = DockStyle.Top;
             _txtPassword.Dock = DockStyle.Top;
             _txtPassword.UseSystemPasswordChar = true;
-            _chkRemember.Text = "Запомнить почту на этом компьютере";
+            _chkRemember.Text = "Запомнить пароль";
             _chkRemember.ForeColor = Theme.Muted;
             _chkRemember.AutoSize = true;
             _lblError.ForeColor = Theme.Danger;
@@ -162,26 +75,15 @@ namespace AutoInsuranceWinForms
 
         private Control BuildBottomButtons()
         {
-            Panel bottom = new Panel { Dock = DockStyle.Bottom, Height = 146 };
+            Panel bottom = new Panel { Dock = DockStyle.Bottom, Height = 74 };
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 58, FlowDirection = FlowDirection.LeftToRight, WrapContents = false };
-            Button btnLogin = Theme.CreatePrimaryButton("Войти", 150);
-            Button btnTest = Theme.CreateSecondaryButton("Проверить SQL", 150);
-            Button btnClose = Theme.CreateGhostButton("Закрыть", 120);
+            Button btnLogin = Theme.CreatePrimaryButton("Войти", 170);
+            Button btnTest = Theme.CreateSecondaryButton("Проверить SQL", 170);
             btnLogin.Name = "btnLogin";
             btnLogin.Click += delegate { DoLogin(); };
             btnTest.Click += delegate { TestConnection(); };
-            btnClose.Click += delegate { Close(); };
             row.Controls.Add(btnLogin);
             row.Controls.Add(btnTest);
-            row.Controls.Add(btnClose);
-            Label hint = new Label
-            {
-                Text = "Учетные записи: head@autosalon.local / manager@autosalon.local / stock@autosalon.local / service@autosalon.local / admin@autosalon.local",
-                Dock = DockStyle.Fill,
-                ForeColor = Theme.Muted,
-                Font = new Font("Segoe UI", 9F)
-            };
-            bottom.Controls.Add(hint);
             bottom.Controls.Add(row);
             return bottom;
         }
