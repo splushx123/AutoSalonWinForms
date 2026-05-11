@@ -65,7 +65,7 @@ namespace AutoInsuranceWinForms
         public static void StyleForm(Form form)
         {
             form.BackColor = AppBack;
-            form.Font = new Font("Segoe UI", 10F);
+            form.Font = new Font("Bahnschrift", 10F);
             form.ForeColor = Ink;
         }
 
@@ -84,7 +84,7 @@ namespace AutoInsuranceWinForms
 
         public static Label Label(string text, float size, FontStyle style, Color color)
         {
-            return new Label { Text = text, Font = new Font("Segoe UI", size, style), ForeColor = color, AutoEllipsis = true };
+            return new Label { Text = text, Font = new Font("Bahnschrift", size, style), ForeColor = color, AutoEllipsis = true };
         }
 
         public static TextBox CreateTextBox(int width)
@@ -119,7 +119,7 @@ namespace AutoInsuranceWinForms
             {
                 Width = width,
                 Format = DateTimePickerFormat.Short,
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Consolas", 10F)
             };
         }
 
@@ -131,13 +131,13 @@ namespace AutoInsuranceWinForms
                 Maximum = max,
                 DecimalPlaces = decimals,
                 ThousandsSeparator = true,
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Consolas", 10F)
             };
         }
 
         public static Button CreatePrimaryButton(string text, int width, bool filled)
         {
-            return BuildButton(text, width, filled ? Primary : Color.White, filled ? Color.White : Primary, filled ? Primary : Border, filled ? PrimaryDark : CardAlt);
+            return BuildButton(text, width, filled ? Primary : CardAlt, filled ? Color.White : Accent, filled ? Primary : Border, filled ? Violet : Color.FromArgb(42, 50, 79));
         }
 
         public static Button CreatePrimaryButton(string text, int width)
@@ -161,7 +161,7 @@ namespace AutoInsuranceWinForms
             {
                 Text = text,
                 Width = width,
-                Height = 42,
+                Height = 44,
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
                 BackColor = back,
