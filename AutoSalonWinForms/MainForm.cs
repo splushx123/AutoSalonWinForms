@@ -12,6 +12,9 @@ namespace AutoInsuranceWinForms
         private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(96);
         private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(96);
         private readonly Label _periodHint = new Label();
+        private bool _isDarkTheme;
+        private Panel _ribbonPanel;
+        private RoundedPanel _dashboardPanel;
         public bool ReturnToLogin { get; private set; }
 
         public MainForm(UserAccount user)
@@ -29,6 +32,7 @@ namespace AutoInsuranceWinForms
             dashboard.Dock = DockStyle.Fill;
             dashboard.Padding = new Padding(18);
             shell.Controls.Add(dashboard);
+            _dashboardPanel = dashboard;
 
             Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 190, Padding = new Padding(0, 0, 0, 8) };
             Label sideTitle = new Label { Text = "Статистика за период", Dock = DockStyle.Top, Height = 30, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Theme.Ink };
@@ -57,8 +61,9 @@ namespace AutoInsuranceWinForms
 
             Panel ribbon = BuildRibbon();
             shell.Controls.Add(ribbon);
+            _ribbonPanel = ribbon;
 
-            Load += delegate { FillModules(); ApplyPeriodAndRefreshStats(); };
+            Load += delegate { FillModules(); ApplyPeriodAndRefreshStats(); ApplyTheme(false); };
         }
 
         private Panel BuildRibbon()
@@ -85,12 +90,67 @@ namespace AutoInsuranceWinForms
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
+            Button themeToggle = Theme.CreateSecondaryButton("🌙", 44);
+            themeToggle.Dock = DockStyle.Right;
+            themeToggle.Click += delegate
+            {
+                _isDarkTheme = !_isDarkTheme;
+                themeToggle.Text = _isDarkTheme ? "☀" : "🌙";
+                ApplyTheme(_isDarkTheme);
+            };
+
             Panel divider = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = Theme.Border };
 
+            ribbon.Controls.Add(themeToggle);
             ribbon.Controls.Add(user);
             ribbon.Controls.Add(logo);
             ribbon.Controls.Add(divider);
             return ribbon;
+        }
+
+        private void ApplyTheme(bool dark)
+        {
+            Color appBack = dark ? Color.FromArgb(20, 24, 33) : Theme.AppBack;
+            Color surface = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
+            Color card = dark ? Color.FromArgb(40, 46, 62) : Theme.CardAlt;
+            Color text = dark ? Color.FromArgb(230, 236, 245) : Theme.Ink;
+            Color muted = dark ? Color.FromArgb(170, 182, 201) : Theme.Muted;
+            Color border = dark ? Color.FromArgb(76, 86, 112) : Theme.Border;
+
+            BackColor = appBack;
+            foreach (Control c in Controls) ApplyThemeRecursive(c, appBack, surface, card, text, muted, border);
+            if (_ribbonPanel != null) _ribbonPanel.BackColor = surface;
+            if (_dashboardPanel != null) _dashboardPanel.BackColor = surface;
+        }
+
+        private void ApplyThemeRecursive(Control c, Color appBack, Color surface, Color card, Color text, Color muted, Color border)
+        {
+            if (c is RoundedPanel rp)
+            {
+                rp.BackColor = card;
+                rp.StrokeColor = border;
+            }
+            else if (c is Panel p)
+            {
+                if (p.Width <= 8) return; // keep accent bars
+                p.BackColor = appBack;
+            }
+            else if (c is Label l)
+            {
+                l.ForeColor = l.Font.Bold ? text : muted;
+            }
+            else if (c is Button b)
+            {
+                b.BackColor = darkButton(c.FindForm().BackColor);
+                b.ForeColor = text;
+            }
+
+            foreach (Control child in c.Controls) ApplyThemeRecursive(child, appBack, surface, card, text, muted, border);
+        }
+
+        private Color darkButton(Color formBack)
+        {
+            return _isDarkTheme ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
         }
 
         private Panel BuildPeriodPanel()
