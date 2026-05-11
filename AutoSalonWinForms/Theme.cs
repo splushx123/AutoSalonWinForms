@@ -169,8 +169,12 @@ namespace AutoInsuranceWinForms
                 Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            b.FlatAppearance.BorderSize = border == Color.Transparent ? 0 : 1;
-            b.FlatAppearance.BorderColor = border;
+            bool hasBorder = border != Color.Transparent;
+            b.FlatAppearance.BorderSize = hasBorder ? 1 : 0;
+            if (hasBorder)
+            {
+                b.FlatAppearance.BorderColor = border;
+            }
             b.MouseEnter += delegate { b.BackColor = hover; };
             b.MouseLeave += delegate { b.BackColor = back; };
             return b;
