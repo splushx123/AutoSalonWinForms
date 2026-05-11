@@ -9,7 +9,6 @@ namespace AutoInsuranceWinForms
         private readonly UserAccount _user;
         private readonly FlowLayoutPanel _statsPanel = new FlowLayoutPanel();
         private readonly FlowLayoutPanel _modulesPanel = new FlowLayoutPanel();
-        private readonly Label _clock = new Label();
         private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(120);
         private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(120);
         private readonly Label _periodHint = new Label();
@@ -45,22 +44,24 @@ namespace AutoInsuranceWinForms
             topStatsArea.Controls.Add(periodPanel);
             topStatsArea.Controls.Add(sideTitle);
 
-            _modulesPanel.Dock = DockStyle.Fill;
+            FlowLayoutPanel bottomActions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 52, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, Padding = new Padding(0, 6, 0, 0) };
+            Button exitButton = Theme.CreatePrimaryButton("Выйти", 120);
+            exitButton.Click += delegate { ReturnToLogin = false; Close(); };
+            bottomActions.Controls.Add(exitButton);
+
+                        _modulesPanel.Dock = DockStyle.Fill;
             _modulesPanel.AutoScroll = true;
             _modulesPanel.WrapContents = true;
             _modulesPanel.Padding = new Padding(0, 10, 0, 0);
 
             dashboard.Controls.Add(_modulesPanel);
+            dashboard.Controls.Add(bottomActions);
             dashboard.Controls.Add(topStatsArea);
             dashboard.Controls.Add(sub);
             dashboard.Controls.Add(title);
 
             Panel ribbon = BuildRibbon();
             shell.Controls.Add(ribbon);
-
-            Timer t = new Timer { Interval = 1000 };
-            t.Tick += delegate { _clock.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm"); };
-            t.Start();
 
             Load += delegate { FillModules(); ApplyPeriodAndRefreshStats(); };
         }
@@ -83,26 +84,14 @@ namespace AutoInsuranceWinForms
             {
                 Text = _user.FullName + "\n" + _user.Email,
                 Dock = DockStyle.Left,
-                Width = 360,
+                Width = 480,
                 ForeColor = Theme.Muted,
                 Font = new Font("Segoe UI", 10F),
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
-            Button logout = Theme.CreatePrimaryButton("Сменить пользователя", 210);
-            logout.Dock = DockStyle.Right;
-            logout.Click += delegate { ReturnToLogin = true; Close(); };
-
-            _clock.Dock = DockStyle.Right;
-            _clock.Width = 170;
-            _clock.ForeColor = Theme.Muted;
-            _clock.TextAlign = ContentAlignment.MiddleRight;
-            _clock.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-
             Panel divider = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = Theme.Border };
 
-            ribbon.Controls.Add(logout);
-            ribbon.Controls.Add(_clock);
             ribbon.Controls.Add(user);
             ribbon.Controls.Add(logo);
             ribbon.Controls.Add(divider);
