@@ -44,8 +44,9 @@ namespace AutoInsuranceWinForms
             topStatsArea.Controls.Add(periodPanel);
             topStatsArea.Controls.Add(sideTitle);
 
-            FlowLayoutPanel bottomActions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 52, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, Padding = new Padding(0, 6, 0, 0) };
+            FlowLayoutPanel bottomActions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 64, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, Padding = new Padding(0, 10, 0, 10) };
             Button exitButton = Theme.CreatePrimaryButton("Выйти", 120);
+            exitButton.Margin = new Padding(0);
             exitButton.Click += delegate { ReturnToLogin = true; Close(); };
             bottomActions.Controls.Add(exitButton);
 
