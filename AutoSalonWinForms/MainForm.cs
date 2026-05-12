@@ -34,7 +34,7 @@ namespace AutoInsuranceWinForms
             shell.Controls.Add(dashboard);
             _dashboardPanel = dashboard;
 
-            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 190, Padding = new Padding(0, 0, 0, 8) };
+            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 208, Padding = new Padding(0, 0, 0, 10) };
             Label sideTitle = new Label { Text = "Статистика за период", Dock = DockStyle.Top, Height = 30, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Theme.Ink };
             Panel periodPanel = BuildPeriodPanel();
             _statsPanel.Dock = DockStyle.Fill;
@@ -50,10 +50,10 @@ namespace AutoInsuranceWinForms
             exitButton.Click += delegate { ReturnToLogin = true; Close(); };
             bottomActions.Controls.Add(exitButton);
 
-                        _modulesPanel.Dock = DockStyle.Fill;
+            _modulesPanel.Dock = DockStyle.Fill;
             _modulesPanel.AutoScroll = true;
             _modulesPanel.WrapContents = true;
-            _modulesPanel.Padding = new Padding(0, 10, 0, 0);
+            _modulesPanel.Padding = new Padding(2, 12, 2, 2);
 
             dashboard.Controls.Add(_modulesPanel);
             dashboard.Controls.Add(bottomActions);
@@ -118,19 +118,20 @@ namespace AutoInsuranceWinForms
 
         private Panel BuildPeriodPanel()
         {
-            Panel panel = new Panel { Dock = DockStyle.Top, Height = 60, Padding = new Padding(8, 0, 0, 4) };
+            Panel panel = new Panel { Dock = DockStyle.Top, Height = 70, Padding = new Padding(8, 2, 0, 6) };
 
             _dtFrom.Value = DateTime.Today.AddMonths(-1);
             _dtTo.Value = DateTime.Today;
 
-            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 34, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, AutoSize = false };
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, AutoSize = false };
             row.Controls.Add(new Label { Text = "Период с:", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtFrom);
             row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtTo);
 
             Button apply = Theme.CreateSecondaryButton("Показать", 110);
-            apply.Height = 32;
+            apply.Height = 34;
+            apply.Margin = new Padding(10, 0, 0, 0);
             apply.Click += delegate { ApplyPeriodAndRefreshStats(); };
             row.Controls.Add(apply);
 
@@ -213,7 +214,7 @@ namespace AutoInsuranceWinForms
             RoundedPanel card = Theme.CreateCard(18);
             card.Width = 300;
             card.Height = 176;
-            card.Margin = new Padding(0, 0, 14, 14);
+            card.Margin = new Padding(2, 2, 14, 14);
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
             Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold) };
@@ -238,7 +239,7 @@ namespace AutoInsuranceWinForms
 
         private void AddGauge(string title, string value, Color color)
         {
-            RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 14, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 8, 0), Padding = new Padding(10) };
+            RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 12, StrokeColor = Theme.Border, Margin = new Padding(2, 2, 8, 8), Padding = new Padding(10) };
             Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
             Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 12F : 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
