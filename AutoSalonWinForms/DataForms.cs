@@ -204,7 +204,7 @@ namespace AutoInsuranceWinForms
             tableCard.Controls.Add(_grid);
             tableCard.Controls.Add(tableHeader);
 
-            Load += delegate { LoadData(); };
+            Load += delegate { Theme.ApplyCurrentTheme(this); LoadData(); };
         }
 
         private Control BuildSearchBlock()
@@ -321,6 +321,8 @@ namespace AutoInsuranceWinForms
                 _controls[field.Column] = control;
                 AddField(table, field.Label + (field.Required ? " *" : string.Empty), control, index++);
             }
+
+            Load += delegate { Theme.ApplyCurrentTheme(this); };
 
             var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 76, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(18), BackColor = Theme.CardAlt, WrapContents = false };
             var save = Theme.CreatePrimaryButton("Сохранить карточку", 170);
