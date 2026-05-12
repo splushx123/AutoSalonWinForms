@@ -189,9 +189,9 @@ namespace AutoInsuranceWinForms
             add.Margin = new Padding(0, 0, 8, 0);
             edit.Margin = new Padding(0, 0, 8, 0);
             del.Margin = new Padding(0, 0, 8, 0);
-            add.Click += delegate { OpenEditor(null); };
-            edit.Click += delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
-            del.Click += delegate { DeleteSelected(); };
+            add.Click += delegate { SafeRun(delegate { OpenEditor(null); }); };
+            edit.Click += delegate { SafeRun(delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); }); };
+            del.Click += delegate { SafeRun(delegate { DeleteSelected(); }); };
             row.Controls.Add(add); row.Controls.Add(edit); row.Controls.Add(del);
             toolbar.Controls.Add(row);
 
@@ -239,6 +239,12 @@ namespace AutoInsuranceWinForms
                 LoadData();
             }
             catch (Exception ex) { MessageBox.Show("Не удалось удалить запись.\n" + ex.Message); }
+        }
+
+        private void SafeRun(Action action)
+        {
+            try { action(); }
+            catch (Exception ex) { MessageBox.Show("Ошибка операции.\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
     }
 
@@ -321,8 +327,8 @@ namespace AutoInsuranceWinForms
                 return n;
             }
             var cb = Theme.CreateComboBox(330);
-            cb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cb.AutoCompleteMode = AutoCompleteMode.None;
+            cb.AutoCompleteSource = AutoCompleteSource.None;
             if (!f.Required)
             {
                 var source = Db.Query(f.LookupSql);
