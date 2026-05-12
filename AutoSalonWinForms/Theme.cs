@@ -32,6 +32,16 @@ namespace AutoInsuranceWinForms
             }
         }
 
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            if (Width <= 0 || Height <= 0) return;
+            using (GraphicsPath path = RoundRect(new Rectangle(0, 0, Width, Height), Radius))
+            {
+                Region = new Region(path);
+            }
+        }
+
         private static GraphicsPath RoundRect(Rectangle bounds, int radius)
         {
             int d = radius * 2;
