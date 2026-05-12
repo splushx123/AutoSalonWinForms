@@ -47,6 +47,14 @@ namespace AutoInsuranceWinForms
 
     public static class Theme
     {
+        private sealed class ButtonPalette
+        {
+            public Color LightBack;
+            public Color LightFore;
+            public Color LightBorder;
+            public Color LightHover;
+        }
+
         public static bool IsDarkMode { get; private set; }
         public static readonly Color AppBack = Color.FromArgb(242, 246, 252);
         public static readonly Color Surface = Color.FromArgb(235, 241, 249);
@@ -112,8 +120,7 @@ namespace AutoInsuranceWinForms
             }
             else if (c is Button b)
             {
-                b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
-                b.ForeColor = text;
+                ApplyButtonTheme(b, text);
             }
             else if (c is TextBox txt)
             {
@@ -241,15 +248,34 @@ namespace AutoInsuranceWinForms
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            bool hasBorder = border != Color.Transparent;
-            b.FlatAppearance.BorderSize = hasBorder ? 1 : 0;
-            if (hasBorder)
+            b.Tag = new ButtonPalette { LightBack = back, LightFore = fore, LightBorder = border, LightHover = hover };
+            b.FlatAppearance.BorderSize = border != Color.Transparent ? 1 : 0;
+            if (border != Color.Transparent) b.FlatAppearance.BorderColor = border;
+            b.MouseEnter += delegate
             {
-                b.FlatAppearance.BorderColor = border;
-            }
-            b.MouseEnter += delegate { b.BackColor = hover; };
-            b.MouseLeave += delegate { b.BackColor = back; };
+                if (b.Tag is ButtonPalette palette)
+                    b.BackColor = IsDarkMode ? Color.FromArgb(70, 80, 106) : palette.LightHover;
+            };
+            b.MouseLeave += delegate
+            {
+                if (b.Tag is ButtonPalette palette)
+                    b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
+            };
             return b;
+        }
+
+        private static void ApplyButtonTheme(Button b, Color text)
+        {
+            if (!(b.Tag is ButtonPalette palette))
+            {
+                b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+                b.ForeColor = text;
+                return;
+            }
+            b.ForeColor = IsDarkMode ? text : palette.LightFore;
+            b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
+            b.FlatAppearance.BorderSize = palette.LightBorder == Color.Transparent ? 0 : 1;
+            b.FlatAppearance.BorderColor = IsDarkMode ? Color.FromArgb(97, 111, 142) : palette.LightBorder;
         }
 
         public static void StyleGrid(DataGridView grid)

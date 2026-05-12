@@ -183,6 +183,7 @@ namespace AutoInsuranceWinForms
             AddGauge("Сделки", SafeCount($"SELECT COUNT(*) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'").ToString(), Theme.Warning);
             AddGauge("Выручка", SafeMoney($"SELECT ISNULL(SUM(final_price),0) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'") + " руб.", Theme.Violet);
             AddGauge("Тест-драйвы", SafeCount($"SELECT COUNT(*) FROM dbo.TestDrive WHERE planned_start >= '{from}' AND planned_start < '{to}'").ToString(), Theme.Accent);
+            if (_isDarkTheme) Theme.ApplyCurrentTheme(this);
         }
 
         private int SafeCount(string sql) { try { return Db.Count(sql); } catch { return 0; } }
@@ -203,6 +204,7 @@ namespace AutoInsuranceWinForms
             AddModule("05", "Услуги", "Подготовка, доп. оборудование, стоимость", delegate { OpenModule("Услуги", new EntityListForm(_user, EntityConfigs.Services())); }, head || manager || service || admin, Theme.Violet);
             AddModule("06", "Сотрудники", "ФИО, должности, контакты, даты работы", delegate { OpenModule("Сотрудники", new EntityListForm(_user, EntityConfigs.Employees())); }, head || admin, Color.FromArgb(65, 91, 130));
             AddModule("07", "Отчеты", "Продажи, склад, оплаты, услуги", delegate { OpenModule("Отчеты", new ReportsForm()); }, head || manager || admin, Color.FromArgb(0, 132, 160));
+            if (_isDarkTheme) Theme.ApplyCurrentTheme(this);
         }
 
         private void AddModule(string num, string title, string description, Action action, bool visible, Color color)
