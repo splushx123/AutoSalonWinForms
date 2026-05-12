@@ -282,6 +282,20 @@ namespace AutoInsuranceWinForms
             }
         }
 
+        private static void ApplyButtonTheme(Button b, Color text)
+        {
+            if (!(b.Tag is ButtonPalette palette))
+            {
+                b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+                b.ForeColor = text;
+                return;
+            }
+            b.ForeColor = IsDarkMode ? text : palette.LightFore;
+            b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
+            b.FlatAppearance.BorderSize = palette.LightBorder == Color.Transparent ? 0 : 1;
+            b.FlatAppearance.BorderColor = IsDarkMode ? Color.FromArgb(97, 111, 142) : palette.LightBorder;
+        }
+
         public static void StyleGrid(DataGridView grid)
         {
             Color back = IsDarkMode ? Color.FromArgb(22, 28, 40) : Card;
