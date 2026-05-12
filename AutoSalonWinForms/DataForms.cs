@@ -300,8 +300,6 @@ namespace AutoInsuranceWinForms
 
             Load += delegate { Theme.ApplyCurrentTheme(this); };
 
-            Load += delegate { Theme.ApplyCurrentTheme(this); };
-
             var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 76, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(18), BackColor = Theme.CardAlt, WrapContents = false };
             var save = Theme.CreatePrimaryButton("Сохранить карточку", 170);
             var cancel = Theme.CreateSecondaryButton("Отмена", 130);
@@ -335,6 +333,8 @@ namespace AutoInsuranceWinForms
                 return n;
             }
             var cb = Theme.CreateComboBox(330);
+            cb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            cb.AutoCompleteSource = AutoCompleteSource.ListItems;
             if (!f.Required)
             {
                 var source = Db.Query(f.LookupSql);
@@ -492,6 +492,8 @@ namespace AutoInsuranceWinForms
                 var deal = GetDate("deal_date"); var transfer = GetDate("transfer_date");
                 if (deal.HasValue && deal.Value.Date > DateTime.Today) { MessageBox.Show("Дата договора не может быть позже текущей даты."); return false; }
                 if (deal.HasValue && transfer.HasValue && transfer.Value.Date < deal.Value.Date) { MessageBox.Show("Дата передачи не может быть раньше даты договора."); return false; }
+                var finalPrice = Convert.ToDecimal(GetValue(_config.Fields.First(f => f.Column == "final_price")));
+                if (finalPrice <= 0) { MessageBox.Show("Итоговая цена сделки должна быть больше нуля."); return false; }
             }
             if (_config.TableName == "TestDrive")
             {
@@ -537,6 +539,11 @@ namespace AutoInsuranceWinForms
         private void TryCreateRelatedTestDrive()
         {
             if (_chkCreateTestDrive == null || !_chkCreateTestDrive.Checked) return;
+            if (_dtTestDrive.Value < DateTime.Now.AddMinutes(-1))
+            {
+                MessageBox.Show("Тест-драйв не создан: плановое время не может быть в прошлом.");
+                return;
+            }
             object client = GetValue(_config.Fields.First(f => f.Column == "client_id"));
             object vin = GetValue(_config.Fields.First(f => f.Column == "vin"));
             object manager = GetValue(_config.Fields.First(f => f.Column == "manager_id"));
