@@ -68,7 +68,7 @@ namespace AutoInsuranceWinForms
             header.Controls.Add(_reportTitle);
             work.Controls.Add(_grid);
             work.Controls.Add(header);
-            Load += delegate { BuildReport(); };
+            Load += delegate { Theme.ApplyCurrentTheme(this); BuildReport(); };
         }
 
         private void BuildReport()
