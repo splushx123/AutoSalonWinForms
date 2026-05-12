@@ -189,10 +189,9 @@ namespace AutoInsuranceWinForms
             add.Margin = new Padding(0, 0, 8, 0);
             edit.Margin = new Padding(0, 0, 8, 0);
             del.Margin = new Padding(0, 0, 8, 0);
-            add.Click += delegate { OpenEditor(null); };
-            edit.Click += delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
-            del.Click += delegate { DeleteSelected(); };
-            if (!CanWrite()) { add.Enabled = false; edit.Enabled = false; del.Enabled = false; }
+            add.Click += delegate { if (!CanWrite()) { ShowAccessDenied(); return; } OpenEditor(null); };
+            edit.Click += delegate { if (!CanWrite()) { ShowAccessDenied(); return; } object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
+            del.Click += delegate { if (!CanWrite()) { ShowAccessDenied(); return; } DeleteSelected(); };
             row.Controls.Add(add); row.Controls.Add(edit); row.Controls.Add(del);
             toolbar.Controls.Add(row);
 
@@ -219,6 +218,11 @@ namespace AutoInsuranceWinForms
             if (_config.TableName == "ServiceOrder") return _user.Role == UserRole.Service || _user.Role == UserRole.Manager;
             if (_config.TableName == "Employee") return false;
             return false;
+        }
+
+        private void ShowAccessDenied()
+        {
+            MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void LoadData()
