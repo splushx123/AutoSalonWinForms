@@ -176,8 +176,8 @@ namespace AutoInsuranceWinForms
             Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0), BackColor = Theme.AppBack };
             Controls.Add(page);
 
-            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 62, BackColor = Theme.Card, Padding = new Padding(10, 10, 10, 10) };
-            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false };
+            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 76, BackColor = Theme.Card, Padding = new Padding(10, 12, 10, 12) };
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, AutoSize = false };
             row.Controls.Add(new Label { Text = "Поиск:", Width = 60, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Padding = new Padding(0, 7, 0, 0) });
             _txtSearch.Width = 240;
             _txtSearch.Margin = new Padding(0, 0, 8, 0);
@@ -186,13 +186,14 @@ namespace AutoInsuranceWinForms
             Button add = Theme.CreatePrimaryButton("Добавить", 110, false);
             Button edit = Theme.CreateSecondaryButton("Изменить", 110);
             Button del = Theme.CreateSecondaryButton("Удалить", 110);
-            Button refresh = Theme.CreateSecondaryButton("Обновить", 110);
+            add.Margin = new Padding(0, 0, 8, 0);
+            edit.Margin = new Padding(0, 0, 8, 0);
+            del.Margin = new Padding(0, 0, 8, 0);
             add.Click += delegate { OpenEditor(null); };
             edit.Click += delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
             del.Click += delegate { DeleteSelected(); };
-            refresh.Click += delegate { LoadData(); };
             if (!CanWrite()) { add.Enabled = false; edit.Enabled = false; del.Enabled = false; }
-            row.Controls.Add(add); row.Controls.Add(edit); row.Controls.Add(del); row.Controls.Add(refresh);
+            row.Controls.Add(add); row.Controls.Add(edit); row.Controls.Add(del);
             toolbar.Controls.Add(row);
 
             Panel tableHeader = new Panel { Dock = DockStyle.Top, Height = 38, BackColor = Theme.CardAlt, Padding = new Padding(8, 6, 8, 6) };
