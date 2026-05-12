@@ -11,7 +11,6 @@ namespace AutoInsuranceWinForms
         private readonly FlowLayoutPanel _modulesPanel = new FlowLayoutPanel();
         private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(96);
         private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(96);
-        private readonly Label _periodHint = new Label();
         private bool _isDarkTheme;
         private Panel _ribbonPanel;
         private RoundedPanel _dashboardPanel;
@@ -124,7 +123,7 @@ namespace AutoInsuranceWinForms
             _dtTo.Value = DateTime.Today;
 
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, AutoSize = false };
-            row.Controls.Add(new Label { Text = "Период с:", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
+            row.Controls.Add(new Label { Text = "Период с", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtFrom);
             row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtTo);
@@ -135,12 +134,6 @@ namespace AutoInsuranceWinForms
             apply.Click += delegate { ApplyPeriodAndRefreshStats(); };
             row.Controls.Add(apply);
 
-            _periodHint.Dock = DockStyle.Top;
-            _periodHint.Height = 20;
-            _periodHint.ForeColor = Theme.Muted;
-            _periodHint.Font = new Font("Segoe UI", 8.5F);
-
-            panel.Controls.Add(_periodHint);
             panel.Controls.Add(row);
             return panel;
         }
@@ -152,7 +145,6 @@ namespace AutoInsuranceWinForms
                 MessageBox.Show("Дата окончания периода не может быть раньше даты начала.", "Период", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            _periodHint.Text = "Сделки/выручка/тест-драйвы за период: " + _dtFrom.Value.ToString("dd.MM.yyyy") + " — " + _dtTo.Value.ToString("dd.MM.yyyy");
             FillStats();
         }
 
