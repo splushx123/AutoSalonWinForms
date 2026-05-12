@@ -173,68 +173,40 @@ namespace AutoInsuranceWinForms
             StartPosition = FormStartPosition.CenterParent;
             Theme.StyleGrid(_grid);
 
-            Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(22), BackColor = Theme.AppBack };
+            Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0), BackColor = Theme.AppBack };
             Controls.Add(page);
 
-            RoundedPanel command = Theme.CreateCard(18);
-            command.Dock = DockStyle.Left;
-            command.Width = 305;
-            command.Margin = new Padding(0, 0, 18, 0);
-            page.Controls.Add(command);
-
-            Label title = new Label { Text = config.Title, Dock = DockStyle.Top, Height = 42, Font = new Font("Segoe UI Semibold", 21F, FontStyle.Bold), ForeColor = Theme.Ink };
-            Label sub = new Label { Text = "Раздел автосалона: поиск, просмотр и операции с записями.", Dock = DockStyle.Top, Height = 58, ForeColor = Theme.Muted };
-            command.Controls.Add(BuildCommandButtons());
-            command.Controls.Add(BuildSearchBlock());
-            command.Controls.Add(sub);
-            command.Controls.Add(title);
-
-            RoundedPanel tableCard = Theme.CreateCard(0);
-            tableCard.Dock = DockStyle.Fill;
-            tableCard.Padding = new Padding(1);
-            page.Controls.Add(tableCard);
-
-            Panel tableHeader = new Panel { Dock = DockStyle.Top, Height = 58, BackColor = Theme.CardAlt, Padding = new Padding(18, 10, 18, 10) };
-            tableHeader.Controls.Add(new Label { Text = "Таблица данных", Dock = DockStyle.Left, Width = 260, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft });
-            _lblStatus.Dock = DockStyle.Right;
-            _lblStatus.Width = 260;
-            _lblStatus.ForeColor = Theme.Muted;
-            _lblStatus.TextAlign = ContentAlignment.MiddleRight;
-            tableHeader.Controls.Add(_lblStatus);
-            tableCard.Controls.Add(_grid);
-            tableCard.Controls.Add(tableHeader);
-
-            Load += delegate { Theme.ApplyCurrentTheme(this); LoadData(); };
-        }
-
-        private Control BuildSearchBlock()
-        {
-            RoundedPanel block = new RoundedPanel { Dock = DockStyle.Top, Height = 122, Radius = 18, BackColor = Theme.CardAlt, StrokeColor = Theme.Border, Padding = new Padding(14), Margin = new Padding(0, 14, 0, 20) };
-            Label label = new Label { Text = "Быстрый поиск", Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted };
-            _txtSearch.Dock = DockStyle.Top;
+            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 62, BackColor = Theme.Card, Padding = new Padding(10, 10, 10, 10) };
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false };
+            row.Controls.Add(new Label { Text = "Поиск:", Width = 60, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Padding = new Padding(0, 7, 0, 0) });
+            _txtSearch.Width = 240;
+            _txtSearch.Margin = new Padding(0, 0, 8, 0);
             _txtSearch.TextChanged += delegate { LoadData(); };
-            block.Controls.Add(_txtSearch);
-            block.Controls.Add(label);
-            return block;
-        }
-
-        private Control BuildCommandButtons()
-        {
-            FlowLayoutPanel actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 210, FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(0, 14, 0, 0) };
-            Button add = Theme.CreatePrimaryButton("Новая запись", 250);
-            Button edit = Theme.CreateSecondaryButton("Открыть карточку", 250);
-            Button del = Theme.CreateSecondaryButton("Удалить запись", 250);
-            Button refresh = Theme.CreateGhostButton("Обновить список", 250);
+            row.Controls.Add(_txtSearch);
+            Button add = Theme.CreatePrimaryButton("Добавить", 110, false);
+            Button edit = Theme.CreateSecondaryButton("Изменить", 110);
+            Button del = Theme.CreateSecondaryButton("Удалить", 110);
+            Button refresh = Theme.CreateSecondaryButton("Обновить", 110);
             add.Click += delegate { OpenEditor(null); };
             edit.Click += delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
             del.Click += delegate { DeleteSelected(); };
             refresh.Click += delegate { LoadData(); };
             if (!CanWrite()) { add.Enabled = false; edit.Enabled = false; del.Enabled = false; }
-            actions.Controls.Add(add);
-            actions.Controls.Add(edit);
-            actions.Controls.Add(del);
-            actions.Controls.Add(refresh);
-            return actions;
+            row.Controls.Add(add); row.Controls.Add(edit); row.Controls.Add(del); row.Controls.Add(refresh);
+            toolbar.Controls.Add(row);
+
+            Panel tableHeader = new Panel { Dock = DockStyle.Top, Height = 38, BackColor = Theme.CardAlt, Padding = new Padding(8, 6, 8, 6) };
+            tableHeader.Controls.Add(new Label { Text = config.Title, Dock = DockStyle.Left, Width = 260, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft });
+            _lblStatus.Dock = DockStyle.Right;
+            _lblStatus.Width = 260;
+            _lblStatus.ForeColor = Theme.Muted;
+            _lblStatus.TextAlign = ContentAlignment.MiddleRight;
+            tableHeader.Controls.Add(_lblStatus);
+            page.Controls.Add(_grid);
+            page.Controls.Add(tableHeader);
+            page.Controls.Add(toolbar);
+
+            Load += delegate { Theme.ApplyCurrentTheme(this); LoadData(); };
         }
 
         private bool CanWrite()
