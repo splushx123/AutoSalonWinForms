@@ -216,7 +216,13 @@ namespace AutoInsuranceWinForms
 
         public static Button CreatePrimaryButton(string text, int width, bool filled)
         {
-            return BuildButton(text, width, filled ? Primary : CardAlt, filled ? Color.White : Accent, filled ? Primary : Border, filled ? Violet : Color.FromArgb(42, 50, 79));
+            return BuildButton(
+                text,
+                width,
+                filled ? Primary : CardAlt,
+                filled ? Color.White : Accent,
+                filled ? Primary : Border,
+                filled ? Violet : Color.FromArgb(226, 238, 252));
         }
 
         public static Button CreatePrimaryButton(string text, int width)
