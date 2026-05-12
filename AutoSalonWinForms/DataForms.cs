@@ -321,6 +321,8 @@ namespace AutoInsuranceWinForms
                 return n;
             }
             var cb = Theme.CreateComboBox(330);
+            cb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            cb.AutoCompleteSource = AutoCompleteSource.ListItems;
             if (!f.Required)
             {
                 var source = Db.Query(f.LookupSql);
