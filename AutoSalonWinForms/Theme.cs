@@ -147,6 +147,11 @@ namespace AutoInsuranceWinForms
                 lb.BackColor = IsDarkMode ? Color.FromArgb(22, 28, 40) : CardAlt;
                 lb.ForeColor = text;
             }
+            else if (c is CheckBox chk)
+            {
+                chk.ForeColor = muted;
+                chk.BackColor = Color.Transparent;
+            }
             else if (c is DateTimePicker dt)
             {
                 dt.CalendarMonthBackground = IsDarkMode ? Color.FromArgb(22, 28, 40) : CardAlt;
