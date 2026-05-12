@@ -274,6 +274,24 @@ namespace AutoInsuranceWinForms
             }
             b.ForeColor = IsDarkMode ? text : palette.LightFore;
             b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
+            bool hasBorder = palette.LightBorder != Color.Transparent;
+            b.FlatAppearance.BorderSize = hasBorder ? 1 : 0;
+            if (hasBorder)
+            {
+                b.FlatAppearance.BorderColor = IsDarkMode ? Color.FromArgb(97, 111, 142) : palette.LightBorder;
+            }
+        }
+
+        private static void ApplyButtonTheme(Button b, Color text)
+        {
+            if (!(b.Tag is ButtonPalette palette))
+            {
+                b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+                b.ForeColor = text;
+                return;
+            }
+            b.ForeColor = IsDarkMode ? text : palette.LightFore;
+            b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
             b.FlatAppearance.BorderSize = palette.LightBorder == Color.Transparent ? 0 : 1;
             b.FlatAppearance.BorderColor = IsDarkMode ? Color.FromArgb(97, 111, 142) : palette.LightBorder;
         }
