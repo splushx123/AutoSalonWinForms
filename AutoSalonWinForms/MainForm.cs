@@ -215,7 +215,7 @@ namespace AutoInsuranceWinForms
             card.Width = 300;
             card.Height = 176;
             card.Margin = new Padding(2, 2, 14, 14);
-            Panel mark = new Panel { Width = 6, BackColor = color, Left = 10, Top = 10, Height = card.Height - 20, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left };
+            Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
             Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold) };
             Label d = new Label { Text = description, Dock = DockStyle.Fill, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), AutoEllipsis = true };
@@ -241,7 +241,7 @@ namespace AutoInsuranceWinForms
         private void AddGauge(string title, string value, Color color)
         {
             RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 12, StrokeColor = Theme.Border, Margin = new Padding(2, 2, 8, 8), Padding = new Padding(10) };
-            Panel dot = new Panel { Width = 6, BackColor = color, Left = 10, Top = 10, Height = item.Height - 20, Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left };
+            Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
             Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 12F : 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             item.Controls.Add(dot);
