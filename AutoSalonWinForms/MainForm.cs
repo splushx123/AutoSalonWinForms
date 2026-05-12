@@ -234,6 +234,7 @@ namespace AutoInsuranceWinForms
             inner.Controls.Add(open, 0, 3);
             card.Controls.Add(inner);
             card.Controls.Add(mark);
+            mark.BringToFront();
             _modulesPanel.Controls.Add(card);
         }
 
