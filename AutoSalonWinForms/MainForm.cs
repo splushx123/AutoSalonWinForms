@@ -242,11 +242,13 @@ namespace AutoInsuranceWinForms
         {
             RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 12, StrokeColor = Theme.Border, Margin = new Padding(2, 2, 8, 8), Padding = new Padding(10) };
             Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
+            Panel content = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 0, 0, 0), BackColor = Color.Transparent };
             Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 12F : 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
+            content.Controls.Add(v);
+            content.Controls.Add(t);
             item.Controls.Add(dot);
-            item.Controls.Add(v);
-            item.Controls.Add(t);
+            item.Controls.Add(content);
             _statsPanel.Controls.Add(item);
         }
 
