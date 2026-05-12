@@ -110,47 +110,10 @@ namespace AutoInsuranceWinForms
 
         private void ApplyTheme(bool dark)
         {
-            Color appBack = dark ? Color.FromArgb(20, 24, 33) : Theme.AppBack;
-            Color surface = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
-            Color card = dark ? Color.FromArgb(40, 46, 62) : Theme.CardAlt;
-            Color text = dark ? Color.FromArgb(230, 236, 245) : Theme.Ink;
-            Color muted = dark ? Color.FromArgb(170, 182, 201) : Theme.Muted;
-            Color border = dark ? Color.FromArgb(76, 86, 112) : Theme.Border;
-
-            BackColor = appBack;
-            foreach (Control c in Controls) ApplyThemeRecursive(c, appBack, surface, card, text, muted, border);
-            if (_ribbonPanel != null) _ribbonPanel.BackColor = surface;
-            if (_dashboardPanel != null) _dashboardPanel.BackColor = surface;
-        }
-
-        private void ApplyThemeRecursive(Control c, Color appBack, Color surface, Color card, Color text, Color muted, Color border)
-        {
-            if (c is RoundedPanel rp)
-            {
-                rp.BackColor = card;
-                rp.StrokeColor = border;
-            }
-            else if (c is Panel p)
-            {
-                if (p.Width <= 8) return; // keep accent bars
-                p.BackColor = appBack;
-            }
-            else if (c is Label l)
-            {
-                l.ForeColor = l.Font.Bold ? text : muted;
-            }
-            else if (c is Button b)
-            {
-                b.BackColor = darkButton(c.FindForm().BackColor);
-                b.ForeColor = text;
-            }
-
-            foreach (Control child in c.Controls) ApplyThemeRecursive(child, appBack, surface, card, text, muted, border);
-        }
-
-        private Color darkButton(Color formBack)
-        {
-            return _isDarkTheme ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+            Theme.SetDarkMode(dark);
+            Theme.ApplyCurrentTheme(this);
+            if (_ribbonPanel != null) _ribbonPanel.BackColor = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
+            if (_dashboardPanel != null) _dashboardPanel.BackColor = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
         }
 
         private Panel BuildPeriodPanel()
@@ -220,6 +183,7 @@ namespace AutoInsuranceWinForms
             AddGauge("Сделки", SafeCount($"SELECT COUNT(*) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'").ToString(), Theme.Warning);
             AddGauge("Выручка", SafeMoney($"SELECT ISNULL(SUM(final_price),0) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'") + " руб.", Theme.Violet);
             AddGauge("Тест-драйвы", SafeCount($"SELECT COUNT(*) FROM dbo.TestDrive WHERE planned_start >= '{from}' AND planned_start < '{to}'").ToString(), Theme.Accent);
+            if (_isDarkTheme) Theme.ApplyCurrentTheme(this);
         }
 
         private int SafeCount(string sql) { try { return Db.Count(sql); } catch { return 0; } }
@@ -240,6 +204,7 @@ namespace AutoInsuranceWinForms
             AddModule("05", "Услуги", "Подготовка, доп. оборудование, стоимость", delegate { OpenModule("Услуги", new EntityListForm(_user, EntityConfigs.Services())); }, head || manager || service || admin, Theme.Violet);
             AddModule("06", "Сотрудники", "ФИО, должности, контакты, даты работы", delegate { OpenModule("Сотрудники", new EntityListForm(_user, EntityConfigs.Employees())); }, head || admin, Color.FromArgb(65, 91, 130));
             AddModule("07", "Отчеты", "Продажи, склад, оплаты, услуги", delegate { OpenModule("Отчеты", new ReportsForm()); }, head || manager || admin, Color.FromArgb(0, 132, 160));
+            if (_isDarkTheme) Theme.ApplyCurrentTheme(this);
         }
 
         private void AddModule(string num, string title, string description, Action action, bool visible, Color color)
@@ -286,6 +251,7 @@ namespace AutoInsuranceWinForms
         private void OpenModule(string name, Form form)
         {
             LogService.Log("Открытие модуля", name);
+            Theme.ApplyCurrentTheme(form);
             using (form) form.ShowDialog(this);
             ApplyPeriodAndRefreshStats();
         }

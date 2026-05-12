@@ -47,6 +47,15 @@ namespace AutoInsuranceWinForms
 
     public static class Theme
     {
+        private sealed class ButtonPalette
+        {
+            public Color LightBack;
+            public Color LightFore;
+            public Color LightBorder;
+            public Color LightHover;
+        }
+
+        public static bool IsDarkMode { get; private set; }
         public static readonly Color AppBack = Color.FromArgb(242, 246, 252);
         public static readonly Color Surface = Color.FromArgb(235, 241, 249);
         public static readonly Color Card = Color.FromArgb(255, 255, 255);
@@ -67,6 +76,76 @@ namespace AutoInsuranceWinForms
             form.BackColor = AppBack;
             form.Font = new Font("Bahnschrift", 10F);
             form.ForeColor = Ink;
+        }
+
+        public static void SetDarkMode(bool darkMode)
+        {
+            IsDarkMode = darkMode;
+        }
+
+        public static void ApplyCurrentTheme(Form form)
+        {
+            Color appBack = IsDarkMode ? Color.FromArgb(20, 24, 33) : AppBack;
+            Color surface = IsDarkMode ? Color.FromArgb(30, 35, 48) : Card;
+            Color card = IsDarkMode ? Color.FromArgb(40, 46, 62) : CardAlt;
+            Color text = IsDarkMode ? Color.FromArgb(230, 236, 245) : Ink;
+            Color muted = IsDarkMode ? Color.FromArgb(170, 182, 201) : Muted;
+            Color border = IsDarkMode ? Color.FromArgb(76, 86, 112) : Border;
+            ApplyThemeRecursive(form, appBack, surface, card, text, muted, border);
+        }
+
+        private static void ApplyThemeRecursive(Control c, Color appBack, Color surface, Color card, Color text, Color muted, Color border)
+        {
+            if (c is Form)
+            {
+                c.BackColor = appBack;
+                c.ForeColor = text;
+            }
+            else if (c is RoundedPanel rp)
+            {
+                rp.BackColor = card;
+                rp.StrokeColor = border;
+            }
+            else if (c is Panel p)
+            {
+                if (p.Width > 8) p.BackColor = appBack;
+            }
+            else if (c is DataGridView grid)
+            {
+                StyleGrid(grid);
+            }
+            else if (c is Label l)
+            {
+                l.ForeColor = l.Font.Bold ? text : muted;
+            }
+            else if (c is Button b)
+            {
+                ApplyButtonTheme(b, text);
+            }
+            else if (c is TextBox txt)
+            {
+                txt.BackColor = IsDarkMode ? Color.FromArgb(22, 28, 40) : CardAlt;
+                txt.ForeColor = text;
+            }
+            else if (c is ComboBox cb)
+            {
+                cb.BackColor = IsDarkMode ? Color.FromArgb(22, 28, 40) : CardAlt;
+                cb.ForeColor = text;
+            }
+            else if (c is ListBox lb)
+            {
+                lb.BackColor = IsDarkMode ? Color.FromArgb(22, 28, 40) : CardAlt;
+                lb.ForeColor = text;
+            }
+            else if (c is DateTimePicker dt)
+            {
+                dt.CalendarMonthBackground = IsDarkMode ? Color.FromArgb(22, 28, 40) : CardAlt;
+                dt.CalendarForeColor = text;
+                dt.CalendarTitleBackColor = IsDarkMode ? Color.FromArgb(30, 35, 48) : AppBack;
+                dt.CalendarTitleForeColor = text;
+            }
+
+            foreach (Control child in c.Controls) ApplyThemeRecursive(child, appBack, surface, card, text, muted, border);
         }
 
         public static RoundedPanel CreateCard(int padding)
@@ -169,20 +248,50 @@ namespace AutoInsuranceWinForms
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            bool hasBorder = border != Color.Transparent;
+            b.Tag = new ButtonPalette { LightBack = back, LightFore = fore, LightBorder = border, LightHover = hover };
+            b.FlatAppearance.BorderSize = border != Color.Transparent ? 1 : 0;
+            if (border != Color.Transparent) b.FlatAppearance.BorderColor = border;
+            b.MouseEnter += delegate
+            {
+                if (b.Tag is ButtonPalette palette)
+                    b.BackColor = IsDarkMode ? Color.FromArgb(70, 80, 106) : palette.LightHover;
+            };
+            b.MouseLeave += delegate
+            {
+                if (b.Tag is ButtonPalette palette)
+                    b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
+            };
+            return b;
+        }
+
+        private static void ApplyButtonTheme(Button b, Color text)
+        {
+            if (!(b.Tag is ButtonPalette palette))
+            {
+                b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+                b.ForeColor = text;
+                return;
+            }
+            b.ForeColor = IsDarkMode ? text : palette.LightFore;
+            b.BackColor = IsDarkMode ? Color.FromArgb(55, 63, 84) : palette.LightBack;
+            bool hasBorder = palette.LightBorder != Color.Transparent;
             b.FlatAppearance.BorderSize = hasBorder ? 1 : 0;
             if (hasBorder)
             {
-                b.FlatAppearance.BorderColor = border;
+                b.FlatAppearance.BorderColor = IsDarkMode ? Color.FromArgb(97, 111, 142) : palette.LightBorder;
             }
-            b.MouseEnter += delegate { b.BackColor = hover; };
-            b.MouseLeave += delegate { b.BackColor = back; };
-            return b;
         }
 
         public static void StyleGrid(DataGridView grid)
         {
-            grid.BackgroundColor = Card;
+            Color back = IsDarkMode ? Color.FromArgb(22, 28, 40) : Card;
+            Color header = IsDarkMode ? Color.FromArgb(30, 35, 48) : Color.FromArgb(232, 240, 250);
+            Color row = IsDarkMode ? Color.FromArgb(25, 31, 44) : Color.FromArgb(255, 255, 255);
+            Color altRow = IsDarkMode ? Color.FromArgb(30, 36, 50) : Color.FromArgb(246, 250, 255);
+            Color selected = IsDarkMode ? Color.FromArgb(52, 68, 99) : Color.FromArgb(214, 232, 255);
+            Color gridLine = IsDarkMode ? Color.FromArgb(52, 62, 84) : Color.FromArgb(221, 230, 242);
+
+            grid.BackgroundColor = back;
             grid.BorderStyle = BorderStyle.None;
             grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             grid.ReadOnly = true;
@@ -194,15 +303,15 @@ namespace AutoInsuranceWinForms
             grid.EnableHeadersVisualStyles = false;
             grid.ColumnHeadersHeight = 42;
             grid.RowTemplate.Height = 36;
-            grid.GridColor = Color.FromArgb(221, 230, 242);
-            grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(232, 240, 250);
-            grid.ColumnHeadersDefaultCellStyle.ForeColor = Ink;
+            grid.GridColor = gridLine;
+            grid.ColumnHeadersDefaultCellStyle.BackColor = header;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = IsDarkMode ? Color.FromArgb(230, 236, 245) : Ink;
             grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
-            grid.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 255);
-            grid.DefaultCellStyle.ForeColor = Ink;
-            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(214, 232, 255);
-            grid.DefaultCellStyle.SelectionForeColor = Ink;
-            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(246, 250, 255);
+            grid.DefaultCellStyle.BackColor = row;
+            grid.DefaultCellStyle.ForeColor = IsDarkMode ? Color.FromArgb(224, 232, 245) : Ink;
+            grid.DefaultCellStyle.SelectionBackColor = selected;
+            grid.DefaultCellStyle.SelectionForeColor = IsDarkMode ? Color.FromArgb(240, 244, 252) : Ink;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = altRow;
         }
     }
 }
