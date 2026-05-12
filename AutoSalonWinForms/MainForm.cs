@@ -11,7 +11,6 @@ namespace AutoInsuranceWinForms
         private readonly FlowLayoutPanel _modulesPanel = new FlowLayoutPanel();
         private readonly DateTimePicker _dtFrom = Theme.CreateDatePicker(96);
         private readonly DateTimePicker _dtTo = Theme.CreateDatePicker(96);
-        private readonly Label _periodHint = new Label();
         private bool _isDarkTheme;
         private Panel _ribbonPanel;
         private RoundedPanel _dashboardPanel;
@@ -34,7 +33,7 @@ namespace AutoInsuranceWinForms
             shell.Controls.Add(dashboard);
             _dashboardPanel = dashboard;
 
-            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 190, Padding = new Padding(0, 0, 0, 8) };
+            Panel topStatsArea = new Panel { Dock = DockStyle.Top, Height = 208, Padding = new Padding(0, 0, 0, 10) };
             Label sideTitle = new Label { Text = "Статистика за период", Dock = DockStyle.Top, Height = 30, Font = new Font("Segoe UI Semibold", 13F, FontStyle.Bold), ForeColor = Theme.Ink };
             Panel periodPanel = BuildPeriodPanel();
             _statsPanel.Dock = DockStyle.Fill;
@@ -45,15 +44,16 @@ namespace AutoInsuranceWinForms
             topStatsArea.Controls.Add(periodPanel);
             topStatsArea.Controls.Add(sideTitle);
 
-            FlowLayoutPanel bottomActions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 52, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, Padding = new Padding(0, 6, 0, 0) };
+            FlowLayoutPanel bottomActions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 64, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, Padding = new Padding(0, 10, 0, 10) };
             Button exitButton = Theme.CreatePrimaryButton("Выйти", 120);
+            exitButton.Margin = new Padding(0);
             exitButton.Click += delegate { ReturnToLogin = true; Close(); };
             bottomActions.Controls.Add(exitButton);
 
-                        _modulesPanel.Dock = DockStyle.Fill;
+            _modulesPanel.Dock = DockStyle.Fill;
             _modulesPanel.AutoScroll = true;
             _modulesPanel.WrapContents = true;
-            _modulesPanel.Padding = new Padding(0, 10, 0, 0);
+            _modulesPanel.Padding = new Padding(2, 12, 2, 2);
 
             dashboard.Controls.Add(_modulesPanel);
             dashboard.Controls.Add(bottomActions);
@@ -110,73 +110,31 @@ namespace AutoInsuranceWinForms
 
         private void ApplyTheme(bool dark)
         {
-            Color appBack = dark ? Color.FromArgb(20, 24, 33) : Theme.AppBack;
-            Color surface = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
-            Color card = dark ? Color.FromArgb(40, 46, 62) : Theme.CardAlt;
-            Color text = dark ? Color.FromArgb(230, 236, 245) : Theme.Ink;
-            Color muted = dark ? Color.FromArgb(170, 182, 201) : Theme.Muted;
-            Color border = dark ? Color.FromArgb(76, 86, 112) : Theme.Border;
-
-            BackColor = appBack;
-            foreach (Control c in Controls) ApplyThemeRecursive(c, appBack, surface, card, text, muted, border);
-            if (_ribbonPanel != null) _ribbonPanel.BackColor = surface;
-            if (_dashboardPanel != null) _dashboardPanel.BackColor = surface;
-        }
-
-        private void ApplyThemeRecursive(Control c, Color appBack, Color surface, Color card, Color text, Color muted, Color border)
-        {
-            if (c is RoundedPanel rp)
-            {
-                rp.BackColor = card;
-                rp.StrokeColor = border;
-            }
-            else if (c is Panel p)
-            {
-                if (p.Width <= 8) return; // keep accent bars
-                p.BackColor = appBack;
-            }
-            else if (c is Label l)
-            {
-                l.ForeColor = l.Font.Bold ? text : muted;
-            }
-            else if (c is Button b)
-            {
-                b.BackColor = darkButton(c.FindForm().BackColor);
-                b.ForeColor = text;
-            }
-
-            foreach (Control child in c.Controls) ApplyThemeRecursive(child, appBack, surface, card, text, muted, border);
-        }
-
-        private Color darkButton(Color formBack)
-        {
-            return _isDarkTheme ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+            Theme.SetDarkMode(dark);
+            Theme.ApplyCurrentTheme(this);
+            if (_ribbonPanel != null) _ribbonPanel.BackColor = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
+            if (_dashboardPanel != null) _dashboardPanel.BackColor = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
         }
 
         private Panel BuildPeriodPanel()
         {
-            Panel panel = new Panel { Dock = DockStyle.Top, Height = 60, Padding = new Padding(8, 0, 0, 4) };
+            Panel panel = new Panel { Dock = DockStyle.Top, Height = 70, Padding = new Padding(8, 2, 0, 6) };
 
             _dtFrom.Value = DateTime.Today.AddMonths(-1);
             _dtTo.Value = DateTime.Today;
 
-            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 34, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, AutoSize = false };
-            row.Controls.Add(new Label { Text = "Период с:", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 40, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, AutoSize = false };
+            row.Controls.Add(new Label { Text = "Период с", Width = 72, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtFrom);
             row.Controls.Add(new Label { Text = "по", Width = 24, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Padding = new Padding(0, 8, 0, 0) });
             row.Controls.Add(_dtTo);
 
             Button apply = Theme.CreateSecondaryButton("Показать", 110);
-            apply.Height = 32;
+            apply.Height = 34;
+            apply.Margin = new Padding(10, 0, 0, 0);
             apply.Click += delegate { ApplyPeriodAndRefreshStats(); };
             row.Controls.Add(apply);
 
-            _periodHint.Dock = DockStyle.Top;
-            _periodHint.Height = 20;
-            _periodHint.ForeColor = Theme.Muted;
-            _periodHint.Font = new Font("Segoe UI", 8.5F);
-
-            panel.Controls.Add(_periodHint);
             panel.Controls.Add(row);
             return panel;
         }
@@ -188,7 +146,6 @@ namespace AutoInsuranceWinForms
                 MessageBox.Show("Дата окончания периода не может быть раньше даты начала.", "Период", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            _periodHint.Text = "Сделки/выручка/тест-драйвы за период: " + _dtFrom.Value.ToString("dd.MM.yyyy") + " — " + _dtTo.Value.ToString("dd.MM.yyyy");
             FillStats();
         }
 
@@ -220,6 +177,7 @@ namespace AutoInsuranceWinForms
             AddGauge("Сделки", SafeCount($"SELECT COUNT(*) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'").ToString(), Theme.Warning);
             AddGauge("Выручка", SafeMoney($"SELECT ISNULL(SUM(final_price),0) FROM dbo.Deal WHERE deal_date >= '{from}' AND deal_date < '{to}'") + " руб.", Theme.Violet);
             AddGauge("Тест-драйвы", SafeCount($"SELECT COUNT(*) FROM dbo.TestDrive WHERE planned_start >= '{from}' AND planned_start < '{to}'").ToString(), Theme.Accent);
+            if (_isDarkTheme) Theme.ApplyCurrentTheme(this);
         }
 
         private int SafeCount(string sql) { try { return Db.Count(sql); } catch { return 0; } }
@@ -240,6 +198,7 @@ namespace AutoInsuranceWinForms
             AddModule("05", "Услуги", "Подготовка, доп. оборудование, стоимость", delegate { OpenModule("Услуги", new EntityListForm(_user, EntityConfigs.Services())); }, head || manager || service || admin, Theme.Violet);
             AddModule("06", "Сотрудники", "ФИО, должности, контакты, даты работы", delegate { OpenModule("Сотрудники", new EntityListForm(_user, EntityConfigs.Employees())); }, head || admin, Color.FromArgb(65, 91, 130));
             AddModule("07", "Отчеты", "Продажи, склад, оплаты, услуги", delegate { OpenModule("Отчеты", new ReportsForm()); }, head || manager || admin, Color.FromArgb(0, 132, 160));
+            if (_isDarkTheme) Theme.ApplyCurrentTheme(this);
         }
 
         private void AddModule(string num, string title, string description, Action action, bool visible, Color color)
@@ -248,7 +207,7 @@ namespace AutoInsuranceWinForms
             RoundedPanel card = Theme.CreateCard(18);
             card.Width = 300;
             card.Height = 176;
-            card.Margin = new Padding(0, 0, 14, 14);
+            card.Margin = new Padding(2, 2, 14, 14);
             Panel mark = new Panel { Dock = DockStyle.Left, Width = 6, BackColor = color };
             Label no = new Label { Text = "Модуль " + num, Dock = DockStyle.Top, Height = 22, ForeColor = Theme.Muted, Font = new Font("Segoe UI", 9.5F), TextAlign = ContentAlignment.MiddleLeft };
             Label h = new Label { Text = title, Dock = DockStyle.Top, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold) };
@@ -273,19 +232,22 @@ namespace AutoInsuranceWinForms
 
         private void AddGauge(string title, string value, Color color)
         {
-            RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 14, StrokeColor = Theme.Border, Margin = new Padding(0, 0, 8, 0), Padding = new Padding(10) };
+            RoundedPanel item = new RoundedPanel { Width = 222, Height = 86, BackColor = Theme.CardAlt, Radius = 12, StrokeColor = Theme.Border, Margin = new Padding(2, 2, 8, 8), Padding = new Padding(10) };
             Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
+            Panel content = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10, 0, 0, 0), BackColor = Color.Transparent };
             Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 12F : 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
-            item.Controls.Add(v);
-            item.Controls.Add(t);
+            content.Controls.Add(v);
+            content.Controls.Add(t);
             item.Controls.Add(dot);
+            item.Controls.Add(content);
             _statsPanel.Controls.Add(item);
         }
 
         private void OpenModule(string name, Form form)
         {
             LogService.Log("Открытие модуля", name);
+            Theme.ApplyCurrentTheme(form);
             using (form) form.ShowDialog(this);
             ApplyPeriodAndRefreshStats();
         }
