@@ -247,7 +247,6 @@ namespace AutoInsuranceWinForms
             item.Controls.Add(dot);
             item.Controls.Add(v);
             item.Controls.Add(t);
-            dot.BringToFront();
             _statsPanel.Controls.Add(item);
         }
 
