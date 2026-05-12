@@ -189,9 +189,9 @@ namespace AutoInsuranceWinForms
             add.Margin = new Padding(0, 0, 8, 0);
             edit.Margin = new Padding(0, 0, 8, 0);
             del.Margin = new Padding(0, 0, 8, 0);
-            add.Click += delegate { if (!CanWrite()) { ShowAccessDenied(); return; } OpenEditor(null); };
-            edit.Click += delegate { if (!CanWrite()) { ShowAccessDenied(); return; } object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
-            del.Click += delegate { if (!CanWrite()) { ShowAccessDenied(); return; } DeleteSelected(); };
+            add.Click += delegate { if (!CanWrite()) { MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; } OpenEditor(null); };
+            edit.Click += delegate { if (!CanWrite()) { MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; } object key = SelectedKey(_grid); if (key != null) OpenEditor(key); };
+            del.Click += delegate { if (!CanWrite()) { MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; } DeleteSelected(); };
             row.Controls.Add(add); row.Controls.Add(edit); row.Controls.Add(del);
             toolbar.Controls.Add(row);
 
@@ -209,19 +209,9 @@ namespace AutoInsuranceWinForms
             Load += delegate { Theme.ApplyCurrentTheme(this); LoadData(); };
         }
 
-        private bool CanWrite()
+        private void ShowAccessDenied()
         {
             return true;
-        }
-
-        private void ShowAccessDenied()
-        {
-            MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-
-        private void ShowAccessDenied()
-        {
-            MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void LoadData()
