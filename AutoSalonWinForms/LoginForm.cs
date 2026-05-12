@@ -48,6 +48,7 @@ namespace AutoInsuranceWinForms
             }
             else _txtEmail.Text = "head@autosalon.local";
             AcceptButton = FindLoginButton(loginCard);
+            Load += delegate { Theme.ApplyCurrentTheme(this); };
         }
 
         private Control BuildLoginFields()
