@@ -259,6 +259,8 @@ namespace AutoInsuranceWinForms
         private readonly EntityConfig _config;
         private readonly object _key;
         private readonly Dictionary<string, Control> _controls = new Dictionary<string, Control>();
+        private CheckBox _chkCreateTestDrive;
+        private DateTimePicker _dtTestDrive;
 
         public EntityEditForm(EntityConfig config, object key)
         {
@@ -294,6 +296,9 @@ namespace AutoInsuranceWinForms
                 _controls[field.Column] = control;
                 AddField(table, field.Label + (field.Required ? " *" : string.Empty), control, index++);
             }
+            if (_config.TableName == "Deal") AddDealAssistBlock(table);
+
+            Load += delegate { Theme.ApplyCurrentTheme(this); };
 
             Load += delegate { Theme.ApplyCurrentTheme(this); };
 
@@ -433,6 +438,7 @@ namespace AutoInsuranceWinForms
                     var cols = string.Join(",", insertFields.Select(f => f.Column));
                     var vals = string.Join(",", insertFields.Select(f => "@" + f.Column));
                     Db.Execute("INSERT INTO dbo." + _config.TableName + "(" + cols + ") VALUES(" + vals + ")", parameters.ToArray());
+                    if (_config.TableName == "Deal") TryCreateRelatedTestDrive();
                 }
                 else
                 {
@@ -442,7 +448,8 @@ namespace AutoInsuranceWinForms
                 }
                 DialogResult = DialogResult.OK; Close();
             }
-            catch (Exception ex) { MessageBox.Show("Ошибка сохранения записи.\n" + ex.Message); }
+            catch (SqlException ex) { MessageBox.Show("Ошибка базы данных.\n" + BuildSqlHint(ex) + "\n\n" + ex.Message); }
+            catch (Exception ex) { MessageBox.Show("Ошибка сохранения записи.\nПроверьте обязательные поля и корректность значений.\n\n" + ex.Message); }
         }
 
         private bool ValidateFields()
@@ -514,6 +521,45 @@ namespace AutoInsuranceWinForms
             var dp = c as DateTimePicker;
             if (dp == null || (!dp.Checked && dp.ShowCheckBox)) return null;
             return dp.Value;
+        }
+
+        private void AddDealAssistBlock(TableLayoutPanel t)
+        {
+            _chkCreateTestDrive = new CheckBox { Text = "Клиент хочет тест-драйв (создать сразу)", AutoSize = true, ForeColor = Theme.Muted };
+            _dtTestDrive = Theme.CreateDatePicker(220);
+            _dtTestDrive.Format = DateTimePickerFormat.Custom;
+            _dtTestDrive.CustomFormat = "dd.MM.yyyy HH:mm";
+            _dtTestDrive.Value = DateTime.Now.AddHours(2);
+            AddField(t, "Тест-драйв", _chkCreateTestDrive, t.RowCount);
+            AddField(t, "Плановое начало", _dtTestDrive, t.RowCount);
+        }
+
+        private void TryCreateRelatedTestDrive()
+        {
+            if (_chkCreateTestDrive == null || !_chkCreateTestDrive.Checked) return;
+            object client = GetValue(_config.Fields.First(f => f.Column == "client_id"));
+            object vin = GetValue(_config.Fields.First(f => f.Column == "vin"));
+            object manager = GetValue(_config.Fields.First(f => f.Column == "manager_id"));
+            if (client == DBNull.Value || vin == DBNull.Value || manager == DBNull.Value)
+            {
+                MessageBox.Show("Тест-драйв не создан: укажите клиента, автомобиль и менеджера в сделке.");
+                return;
+            }
+            Db.Execute(
+                "INSERT INTO dbo.TestDrive(client_id, vin, employee_id, planned_start, planned_duration_min) VALUES(@c,@v,@e,@s,@d)",
+                new SqlParameter("@c", client),
+                new SqlParameter("@v", vin),
+                new SqlParameter("@e", manager),
+                new SqlParameter("@s", _dtTestDrive.Value),
+                new SqlParameter("@d", 30));
+        }
+
+        private string BuildSqlHint(SqlException ex)
+        {
+            if (ex.Number == 2627 || ex.Number == 2601) return "Дублирующее значение. Проверьте уникальные поля (например VIN, номер договора, ИНН).";
+            if (ex.Number == 547) return "Нарушены связи данных. Проверьте, что выбранные клиент/автомобиль/сотрудник существуют.";
+            if (ex.Number == 515) return "Есть незаполненные обязательные поля.";
+            return "Проверьте введенные данные и повторите.";
         }
     }
 }
