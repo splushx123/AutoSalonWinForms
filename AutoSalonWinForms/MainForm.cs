@@ -234,6 +234,7 @@ namespace AutoInsuranceWinForms
             inner.Controls.Add(open, 0, 3);
             card.Controls.Add(inner);
             card.Controls.Add(mark);
+            mark.BringToFront();
             _modulesPanel.Controls.Add(card);
         }
 
@@ -243,9 +244,10 @@ namespace AutoInsuranceWinForms
             Panel dot = new Panel { Width = 6, Dock = DockStyle.Left, BackColor = color };
             Label v = new Label { Text = value, Dock = DockStyle.Bottom, Height = 30, ForeColor = Theme.Ink, Font = new Font("Segoe UI Semibold", value.Length > 10 ? 12F : 16F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
             Label t = new Label { Text = title, Dock = DockStyle.Top, Height = 28, ForeColor = Theme.Muted, Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft };
+            item.Controls.Add(dot);
             item.Controls.Add(v);
             item.Controls.Add(t);
-            item.Controls.Add(dot);
+            dot.BringToFront();
             _statsPanel.Controls.Add(item);
         }
 
