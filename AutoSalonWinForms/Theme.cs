@@ -201,6 +201,8 @@ namespace AutoInsuranceWinForms
                 Width = width,
                 Height = 32,
                 DropDownStyle = ComboBoxStyle.DropDownList,
+                AutoCompleteMode = AutoCompleteMode.None,
+                AutoCompleteSource = AutoCompleteSource.None,
                 Font = new Font("Segoe UI", 10F),
                 BackColor = CardAlt,
                 ForeColor = Ink
