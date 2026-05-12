@@ -211,13 +211,12 @@ namespace AutoInsuranceWinForms
 
         private bool CanWrite()
         {
-            if (_user.Role == UserRole.DepartmentHead) return false;
-            if (_user.Role == UserRole.Admin) return true;
-            if (_config.TableName == "Client" || _config.TableName == "Deal" || _config.TableName == "TestDrive") return _user.Role == UserRole.Manager;
-            if (_config.TableName == "Car") return _user.Role == UserRole.Stock || _user.Role == UserRole.Manager;
-            if (_config.TableName == "ServiceOrder") return _user.Role == UserRole.Service || _user.Role == UserRole.Manager;
-            if (_config.TableName == "Employee") return false;
-            return false;
+            return true;
+        }
+
+        private void ShowAccessDenied()
+        {
+            MessageBox.Show("У вас нет прав на изменение данных в этом разделе.\nДоступен только просмотр.", "Недостаточно прав", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void ShowAccessDenied()
