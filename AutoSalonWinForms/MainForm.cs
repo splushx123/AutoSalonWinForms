@@ -110,47 +110,10 @@ namespace AutoInsuranceWinForms
 
         private void ApplyTheme(bool dark)
         {
-            Color appBack = dark ? Color.FromArgb(20, 24, 33) : Theme.AppBack;
-            Color surface = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
-            Color card = dark ? Color.FromArgb(40, 46, 62) : Theme.CardAlt;
-            Color text = dark ? Color.FromArgb(230, 236, 245) : Theme.Ink;
-            Color muted = dark ? Color.FromArgb(170, 182, 201) : Theme.Muted;
-            Color border = dark ? Color.FromArgb(76, 86, 112) : Theme.Border;
-
-            BackColor = appBack;
-            foreach (Control c in Controls) ApplyThemeRecursive(c, appBack, surface, card, text, muted, border);
-            if (_ribbonPanel != null) _ribbonPanel.BackColor = surface;
-            if (_dashboardPanel != null) _dashboardPanel.BackColor = surface;
-        }
-
-        private void ApplyThemeRecursive(Control c, Color appBack, Color surface, Color card, Color text, Color muted, Color border)
-        {
-            if (c is RoundedPanel rp)
-            {
-                rp.BackColor = card;
-                rp.StrokeColor = border;
-            }
-            else if (c is Panel p)
-            {
-                if (p.Width <= 8) return; // keep accent bars
-                p.BackColor = appBack;
-            }
-            else if (c is Label l)
-            {
-                l.ForeColor = l.Font.Bold ? text : muted;
-            }
-            else if (c is Button b)
-            {
-                b.BackColor = darkButton(c.FindForm().BackColor);
-                b.ForeColor = text;
-            }
-
-            foreach (Control child in c.Controls) ApplyThemeRecursive(child, appBack, surface, card, text, muted, border);
-        }
-
-        private Color darkButton(Color formBack)
-        {
-            return _isDarkTheme ? Color.FromArgb(55, 63, 84) : Color.FromArgb(235, 242, 252);
+            Theme.SetDarkMode(dark);
+            Theme.ApplyCurrentTheme(this);
+            if (_ribbonPanel != null) _ribbonPanel.BackColor = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
+            if (_dashboardPanel != null) _dashboardPanel.BackColor = dark ? Color.FromArgb(30, 35, 48) : Theme.Card;
         }
 
         private Panel BuildPeriodPanel()
@@ -286,6 +249,7 @@ namespace AutoInsuranceWinForms
         private void OpenModule(string name, Form form)
         {
             LogService.Log("Открытие модуля", name);
+            Theme.ApplyCurrentTheme(form);
             using (form) form.ShowDialog(this);
             ApplyPeriodAndRefreshStats();
         }
