@@ -44,6 +44,8 @@ namespace AutoInsuranceWinForms
             _dtTo.Margin = new Padding(0, 8, 12, 0);
             _dtFrom.Value = new DateTime(DateTime.Today.Year, 1, 1);
             _dtTo.Value = DateTime.Today;
+            _dtFrom.ValueChanged += delegate { BuildReport(); };
+            _dtTo.ValueChanged += delegate { BuildReport(); };
             row.Controls.Add(_dtFrom);
             row.Controls.Add(new Label { Text = "—", Width = 18, Height = 44, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Theme.Muted, Margin = new Padding(0, 0, 6, 0) });
             row.Controls.Add(_dtTo);
@@ -98,7 +100,8 @@ namespace AutoInsuranceWinForms
                 switch (_reports.SelectedIndex)
                 {
                     case 0:
-                        _grid.DataSource = Db.Query(@"SELECT s.name AS [Статус], COUNT(*) AS [Количество автомобилей] FROM dbo.Car c JOIN dbo.Ref_CarStatus s ON s.status_id=c.status_id GROUP BY s.name ORDER BY [Количество автомобилей] DESC");
+                        _grid.DataSource = Db.Query(@"SELECT s.name AS [Статус], COUNT(*) AS [Количество автомобилей] FROM dbo.Car c JOIN dbo.Ref_CarStatus s ON s.status_id=c.status_id WHERE c.arrival_date>=@from AND c.arrival_date<@to GROUP BY s.name ORDER BY [Количество автомобилей] DESC",
+                            new SqlParameter("@from", from), new SqlParameter("@to", toExclusive));
                         break;
                     case 1:
                         _grid.DataSource = Db.Query(@"SELECT e.last_name + N' ' + e.first_name AS [Менеджер], COUNT(*) AS [Сделок], SUM(d.final_price) AS [Сумма продаж] FROM dbo.Deal d JOIN dbo.Employee e ON e.employee_id=d.manager_id WHERE d.deal_date>=@from AND d.deal_date<@to GROUP BY e.last_name, e.first_name ORDER BY [Сумма продаж] DESC",
@@ -117,7 +120,8 @@ namespace AutoInsuranceWinForms
                             new SqlParameter("@from", from), new SqlParameter("@to", toExclusive));
                         break;
                     default:
-                        _grid.DataSource = Db.Query(@"SELECT c.vin AS [VIN], b.name AS [Марка], m.model_name AS [Модель], c.[year] AS [Год], c.exterior_color AS [Цвет], c.sale_price AS [Цена], s.name AS [Статус] FROM dbo.Car c JOIN dbo.CarModel m ON m.model_id=c.model_id JOIN dbo.Ref_Brand b ON b.brand_id=m.brand_id JOIN dbo.Ref_CarStatus s ON s.status_id=c.status_id WHERE s.name IN (N'В продаже', N'На складе') ORDER BY b.name, m.model_name");
+                        _grid.DataSource = Db.Query(@"SELECT c.vin AS [VIN], b.name AS [Марка], m.model_name AS [Модель], c.[year] AS [Год], c.exterior_color AS [Цвет], c.sale_price AS [Цена], s.name AS [Статус] FROM dbo.Car c JOIN dbo.CarModel m ON m.model_id=c.model_id JOIN dbo.Ref_Brand b ON b.brand_id=m.brand_id JOIN dbo.Ref_CarStatus s ON s.status_id=c.status_id WHERE s.name IN (N'В продаже', N'На складе') AND c.arrival_date>=@from AND c.arrival_date<@to ORDER BY b.name, m.model_name",
+                            new SqlParameter("@from", from), new SqlParameter("@to", toExclusive));
                         break;
                 }
                 _rowCount.Text = _grid.Rows.Count.ToString() + " строк";
