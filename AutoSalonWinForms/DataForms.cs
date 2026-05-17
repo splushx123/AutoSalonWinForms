@@ -275,7 +275,6 @@ namespace AutoInsuranceWinForms
             Panel header = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Theme.Ink, Padding = new Padding(26, 14, 26, 14) };
             header.Controls.Add(new Label { Text = key == null ? "Создание записи" : "Редактирование записи", Dock = DockStyle.Top, Height = 34, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold) });
             header.Controls.Add(new Label { Text = config.Title + " / карточка данных автосалона", Dock = DockStyle.Bottom, Height = 28, ForeColor = Color.FromArgb(191, 214, 238) });
-            shell.Controls.Add(header);
 
             var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(24), AutoScroll = true, BackColor = Theme.Card };
             table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36));
@@ -300,7 +299,9 @@ namespace AutoInsuranceWinForms
             save.Click += delegate { SaveData(); };
             cancel.Click += delegate { DialogResult = DialogResult.Cancel; Close(); };
             buttons.Controls.Add(save); buttons.Controls.Add(cancel);
-            shell.Controls.Add(table); shell.Controls.Add(buttons);
+            shell.Controls.Add(buttons);
+            shell.Controls.Add(table);
+            shell.Controls.Add(header);
             if (key != null) LoadData();
         }
 
