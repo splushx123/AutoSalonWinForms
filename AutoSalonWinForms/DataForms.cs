@@ -176,19 +176,19 @@ namespace AutoInsuranceWinForms
             Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0), BackColor = Theme.AppBack };
             Controls.Add(page);
 
-            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 76, BackColor = Theme.Card, Padding = new Padding(10, 12, 10, 12) };
+            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 84, BackColor = Theme.Card, Padding = new Padding(14, 12, 14, 12) };
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, AutoSize = false };
-            row.Controls.Add(new Label { Text = "Поиск:", Width = 60, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Padding = new Padding(0, 7, 0, 0) });
+            row.Controls.Add(new Label { Text = "Поиск:", Width = 66, Height = 44, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Margin = new Padding(0, 0, 6, 0) });
             _txtSearch.Width = 240;
-            _txtSearch.Margin = new Padding(0, 0, 8, 0);
+            _txtSearch.Margin = new Padding(0, 6, 14, 0);
             _txtSearch.TextChanged += delegate { LoadData(); };
             row.Controls.Add(_txtSearch);
-            Button add = Theme.CreatePrimaryButton("Добавить", 110, false);
-            Button edit = Theme.CreateSecondaryButton("Изменить", 110);
-            Button del = Theme.CreateSecondaryButton("Удалить", 110);
-            add.Margin = new Padding(0, 0, 8, 0);
-            edit.Margin = new Padding(0, 0, 8, 0);
-            del.Margin = new Padding(0, 0, 8, 0);
+            Button add = Theme.CreatePrimaryButton("Добавить", 136);
+            Button edit = Theme.CreateSecondaryButton("Изменить", 136);
+            Button del = Theme.CreateSecondaryButton("Удалить", 136);
+            add.Margin = new Padding(0, 0, 10, 0);
+            edit.Margin = new Padding(0, 0, 10, 0);
+            del.Margin = new Padding(0, 0, 10, 0);
             add.Click += delegate { SafeRun(delegate { OpenEditor(null); }); };
             edit.Click += delegate { SafeRun(delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); }); };
             del.Click += delegate { SafeRun(delegate { DeleteSelected(); }); };
@@ -253,6 +253,7 @@ namespace AutoInsuranceWinForms
         private readonly EntityConfig _config;
         private readonly object _key;
         private readonly Dictionary<string, Control> _controls = new Dictionary<string, Control>();
+        private readonly Dictionary<string, ComboBox> _lookupBoxes = new Dictionary<string, ComboBox>();
         private CheckBox _chkCreateTestDrive;
         private DateTimePicker _dtTestDrive;
 
@@ -276,18 +277,17 @@ namespace AutoInsuranceWinForms
             header.Controls.Add(new Label { Text = config.Title + " / карточка данных автосалона", Dock = DockStyle.Bottom, Height = 28, ForeColor = Color.FromArgb(191, 214, 238) });
             shell.Controls.Add(header);
 
-            var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 4, Padding = new Padding(24), AutoScroll = true, BackColor = Theme.Card };
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24));
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 26));
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24));
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 26));
+            var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(24), AutoScroll = true, BackColor = Theme.Card };
+            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36));
+            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 64));
 
             int index = 0;
             foreach (var field in config.Fields)
             {
-                var control = CreateControl(field);
+                var control = CreateControl(field, out ComboBox lookupBox);
                 control.Dock = DockStyle.Fill;
                 _controls[field.Column] = control;
+                if (lookupBox != null) _lookupBoxes[field.Column] = lookupBox;
                 AddField(table, field.Label + (field.Required ? " *" : string.Empty), control, index++);
             }
             if (_config.TableName == "Deal") AddDealAssistBlock(table);
@@ -304,8 +304,9 @@ namespace AutoInsuranceWinForms
             if (key != null) LoadData();
         }
 
-        private Control CreateControl(FieldDef f)
+        private Control CreateControl(FieldDef f, out ComboBox lookupBox)
         {
+            lookupBox = null;
             if (f.Kind == FieldKind.Text)
             {
                 var tb = Theme.CreateTextBox(330);
@@ -344,23 +345,71 @@ namespace AutoInsuranceWinForms
                 cb.DisplayMember = f.DisplayMember;
             }
             else LookupService.Fill(cb, f.LookupSql, f.ValueMember, f.DisplayMember);
+            lookupBox = cb;
+
+            if (_config.TableName == "Deal" && _key == null && (f.Column == "client_id" || f.Column == "vin"))
+            {
+                var wrap = new TableLayoutPanel { ColumnCount = 2, Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(0) };
+                wrap.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                wrap.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+                cb.Dock = DockStyle.Fill;
+                Button quickAdd = Theme.CreateSecondaryButton(f.Column == "client_id" ? "Новый клиент" : "Новый авто", f.Column == "client_id" ? 128 : 112);
+                quickAdd.Margin = new Padding(10, 0, 0, 0);
+                quickAdd.Anchor = AnchorStyles.Right;
+                quickAdd.Click += delegate { OpenQuickAddForDeal(f.Column); };
+                wrap.Controls.Add(cb, 0, 0);
+                wrap.Controls.Add(quickAdd, 1, 0);
+                return wrap;
+            }
             return cb;
         }
 
         private void AddField(TableLayoutPanel t, string name, Control control, int index)
         {
-            int row = index / 2;
-            int col = (index % 2) * 2;
+            int row = index;
             while (t.RowCount <= row)
             {
                 t.RowCount++;
-                t.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+                t.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
             }
-            Label label = new Label { Text = name, Dock = DockStyle.Fill, Padding = new Padding(0, 10, 10, 0), ForeColor = Theme.Muted, TextAlign = ContentAlignment.TopLeft };
-            Panel inputWrap = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 6, 18, 6) };
+            Label label = new Label { Text = name, Dock = DockStyle.Fill, Padding = new Padding(0, 12, 10, 0), ForeColor = Theme.Muted, TextAlign = ContentAlignment.TopLeft, AutoEllipsis = true };
+            Panel inputWrap = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 8, 18, 8) };
             inputWrap.Controls.Add(control);
-            t.Controls.Add(label, col, row);
-            t.Controls.Add(inputWrap, col + 1, row);
+            t.Controls.Add(label, 0, row);
+            t.Controls.Add(inputWrap, 1, row);
+        }
+
+        private void OpenQuickAddForDeal(string column)
+        {
+            var lookup = _lookupBoxes.ContainsKey(column) ? _lookupBoxes[column] : null;
+            if (lookup == null) return;
+            var entity = column == "client_id" ? EntityConfigs.Clients() : EntityConfigs.Cars();
+            using (var f = new EntityEditForm(entity, null))
+            {
+                if (f.ShowDialog(this) != DialogResult.OK) return;
+            }
+            var field = _config.Fields.First(x => x.Column == column);
+            LookupService.Fill(lookup, field.LookupSql, field.ValueMember, field.DisplayMember);
+            SelectLatestLookupValue(column, lookup);
+        }
+
+        private void SelectLatestLookupValue(string column, ComboBox lookup)
+        {
+            try
+            {
+                if (column == "client_id")
+                {
+                    var dt = Db.Query("SELECT TOP 1 client_id FROM dbo.Client ORDER BY client_id DESC");
+                    if (dt.Rows.Count > 0) lookup.SelectedValue = dt.Rows[0]["client_id"];
+                    return;
+                }
+                if (column == "vin")
+                {
+                    var dt = Db.Query("SELECT TOP 1 vin FROM dbo.Car ORDER BY vin DESC");
+                    if (dt.Rows.Count > 0) lookup.SelectedValue = dt.Rows[0]["vin"];
+                }
+            }
+            catch { }
         }
 
         private void LoadData()
