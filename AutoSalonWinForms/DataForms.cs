@@ -286,7 +286,7 @@ namespace AutoInsuranceWinForms
             {
                 var control = CreateControl(field, out ComboBox lookupBox);
                 control.Dock = DockStyle.Fill;
-                _controls[field.Column] = control;
+                _controls[field.Column] = lookupBox != null ? (Control)lookupBox : control;
                 if (lookupBox != null) _lookupBoxes[field.Column] = lookupBox;
                 AddField(table, field.Label + (field.Required ? " *" : string.Empty), control, index++);
             }
@@ -347,7 +347,7 @@ namespace AutoInsuranceWinForms
             else LookupService.Fill(cb, f.LookupSql, f.ValueMember, f.DisplayMember);
             lookupBox = cb;
 
-            if (_config.TableName == "Deal" && _key == null && (f.Column == "client_id" || f.Column == "vin"))
+            if (_key == null && (f.Column == "client_id" || f.Column == "vin"))
             {
                 var wrap = new TableLayoutPanel { ColumnCount = 2, Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(0) };
                 wrap.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
