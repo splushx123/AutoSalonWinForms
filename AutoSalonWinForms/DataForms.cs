@@ -347,7 +347,10 @@ namespace AutoInsuranceWinForms
             else LookupService.Fill(cb, f.LookupSql, f.ValueMember, f.DisplayMember);
             lookupBox = cb;
 
-            if (_key == null && (f.Column == "client_id" || f.Column == "vin"))
+            if (_key == null
+                && _config.TableName != "Client"
+                && _config.TableName != "Car"
+                && (f.Column == "client_id" || f.Column == "vin"))
             {
                 var wrap = new TableLayoutPanel { ColumnCount = 2, Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(0) };
                 wrap.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
