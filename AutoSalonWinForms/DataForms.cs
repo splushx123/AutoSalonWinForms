@@ -349,8 +349,7 @@ namespace AutoInsuranceWinForms
             lookupBox = cb;
 
             if (_key == null
-                && _config.TableName != "Client"
-                && _config.TableName != "Car"
+                && _config.TableName == "Deal"
                 && (f.Column == "client_id" || f.Column == "vin"))
             {
                 var wrap = new TableLayoutPanel { ColumnCount = 2, Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(0) };
