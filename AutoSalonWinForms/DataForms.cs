@@ -176,19 +176,19 @@ namespace AutoInsuranceWinForms
             Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0), BackColor = Theme.AppBack };
             Controls.Add(page);
 
-            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 76, BackColor = Theme.Card, Padding = new Padding(10, 12, 10, 12) };
+            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 84, BackColor = Theme.Card, Padding = new Padding(14, 12, 14, 12) };
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, AutoSize = false };
-            row.Controls.Add(new Label { Text = "Поиск:", Width = 60, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Padding = new Padding(0, 7, 0, 0) });
+            row.Controls.Add(new Label { Text = "Поиск:", Width = 66, Height = 44, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Margin = new Padding(0, 0, 6, 0) });
             _txtSearch.Width = 240;
-            _txtSearch.Margin = new Padding(0, 0, 8, 0);
+            _txtSearch.Margin = new Padding(0, 6, 14, 0);
             _txtSearch.TextChanged += delegate { LoadData(); };
             row.Controls.Add(_txtSearch);
-            Button add = Theme.CreatePrimaryButton("Добавить", 110, false);
-            Button edit = Theme.CreateSecondaryButton("Изменить", 110);
-            Button del = Theme.CreateSecondaryButton("Удалить", 110);
-            add.Margin = new Padding(0, 0, 8, 0);
-            edit.Margin = new Padding(0, 0, 8, 0);
-            del.Margin = new Padding(0, 0, 8, 0);
+            Button add = Theme.CreatePrimaryButton("Добавить", 136);
+            Button edit = Theme.CreateSecondaryButton("Изменить", 136);
+            Button del = Theme.CreateSecondaryButton("Удалить", 136);
+            add.Margin = new Padding(0, 0, 10, 0);
+            edit.Margin = new Padding(0, 0, 10, 0);
+            del.Margin = new Padding(0, 0, 10, 0);
             add.Click += delegate { SafeRun(delegate { OpenEditor(null); }); };
             edit.Click += delegate { SafeRun(delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); }); };
             del.Click += delegate { SafeRun(delegate { DeleteSelected(); }); };
