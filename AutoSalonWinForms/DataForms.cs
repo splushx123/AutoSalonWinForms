@@ -579,6 +579,11 @@ namespace AutoInsuranceWinForms
                 var deal = GetDate("deal_date"); var transfer = GetDate("transfer_date");
                 if (deal.HasValue && deal.Value.Date > DateTime.Today) { MessageBox.Show("Дата договора не может быть позже текущей даты."); return false; }
                 if (deal.HasValue && transfer.HasValue && transfer.Value.Date < deal.Value.Date) { MessageBox.Show("Дата передачи не может быть раньше даты договора."); return false; }
+                if (_chkCreateTestDrive != null && _dtTestDrive != null && _chkCreateTestDrive.Checked && deal.HasValue && _dtTestDrive.Value > deal.Value)
+                {
+                    MessageBox.Show("Дата тест-драйва не может быть позже даты оформления договора.");
+                    return false;
+                }
                 var finalPrice = Convert.ToDecimal(GetValue(_config.Fields.First(f => f.Column == "final_price")));
                 if (finalPrice <= 0) { MessageBox.Show("Итоговая цена сделки должна быть больше нуля."); return false; }
                 var down = GetDecimal("down_payment");
@@ -652,6 +657,12 @@ namespace AutoInsuranceWinForms
             if (_dtTestDrive.Value < DateTime.Now.AddMinutes(-1))
             {
                 MessageBox.Show("Тест-драйв не создан: плановое время не может быть в прошлом.");
+                return;
+            }
+            DateTime? dealDate = GetDate("deal_date");
+            if (dealDate.HasValue && _dtTestDrive.Value > dealDate.Value)
+            {
+                MessageBox.Show("Тест-драйв не создан: дата тест-драйва не может быть позже даты оформления договора.");
                 return;
             }
             object client = GetValue(_config.Fields.First(f => f.Column == "client_id"));
