@@ -644,11 +644,22 @@ namespace AutoInsuranceWinForms
                 bool active = _chkCreateTestDrive.Checked;
                 _dtTestDrive.Enabled = active;
                 _dtTestDrive.Visible = active;
+                if (_dtTestDrive.Parent != null)
+                {
+                    _dtTestDrive.Parent.Visible = active;
+                    _dtTestDrive.Parent.Enabled = active;
+                }
+                if (_dtTestDrive.FindForm() != null) _dtTestDrive.FindForm().PerformLayout();
                 if (active && _dtTestDrive.Value < DateTime.Now.AddMinutes(5))
                     _dtTestDrive.Value = DateTime.Now.AddHours(2);
             };
             AddField(t, "Тест-драйв", _chkCreateTestDrive, t.RowCount);
             AddField(t, "Плановое начало", _dtTestDrive, t.RowCount);
+            if (_dtTestDrive.Parent != null)
+            {
+                _dtTestDrive.Parent.Visible = false;
+                _dtTestDrive.Parent.Enabled = false;
+            }
         }
 
         private void TryCreateRelatedTestDrive()
