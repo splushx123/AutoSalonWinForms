@@ -326,6 +326,10 @@ namespace AutoInsuranceWinForms
             if (f.Kind == FieldKind.Number)
             {
                 var n = Theme.CreateNumeric(220, f.Max, f.Decimals);
+                if (f.Column == "year")
+                {
+                    n.ThousandsSeparator = false;
+                }
                 return n;
             }
             var cb = Theme.CreateComboBox(330);
