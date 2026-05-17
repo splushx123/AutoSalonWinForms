@@ -575,6 +575,16 @@ namespace AutoInsuranceWinForms
             _dtTestDrive.Format = DateTimePickerFormat.Custom;
             _dtTestDrive.CustomFormat = "dd.MM.yyyy HH:mm";
             _dtTestDrive.Value = DateTime.Now.AddHours(2);
+            _dtTestDrive.Enabled = false;
+            _dtTestDrive.Visible = false;
+            _chkCreateTestDrive.CheckedChanged += delegate
+            {
+                bool active = _chkCreateTestDrive.Checked;
+                _dtTestDrive.Enabled = active;
+                _dtTestDrive.Visible = active;
+                if (active && _dtTestDrive.Value < DateTime.Now.AddMinutes(5))
+                    _dtTestDrive.Value = DateTime.Now.AddHours(2);
+            };
             AddField(t, "Тест-драйв", _chkCreateTestDrive, t.RowCount);
             AddField(t, "Плановое начало", _dtTestDrive, t.RowCount);
         }
