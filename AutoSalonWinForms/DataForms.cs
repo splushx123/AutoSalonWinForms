@@ -546,6 +546,15 @@ namespace AutoInsuranceWinForms
                 var bd = GetDate("birth_date");
                 if (bd.HasValue && bd.Value.Date > DateTime.Today) { MessageBox.Show("Дата рождения не может быть в будущем."); return false; }
                 if (bd.HasValue && bd.Value.Date < new DateTime(1900, 1, 1)) { MessageBox.Show("Дата рождения указана некорректно."); return false; }
+                if (bd.HasValue)
+                {
+                    DateTime eighteenYearsAgo = DateTime.Today.AddYears(-18);
+                    if (bd.Value.Date > eighteenYearsAgo)
+                    {
+                        MessageBox.Show("Клиент должен быть не моложе 18 лет.");
+                        return false;
+                    }
+                }
             }
             if (_config.TableName == "Employee")
             {
