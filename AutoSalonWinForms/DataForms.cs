@@ -176,19 +176,19 @@ namespace AutoInsuranceWinForms
             Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0), BackColor = Theme.AppBack };
             Controls.Add(page);
 
-            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 76, BackColor = Theme.Card, Padding = new Padding(10, 12, 10, 12) };
+            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 84, BackColor = Theme.Card, Padding = new Padding(14, 12, 14, 12) };
             FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, AutoSize = false };
-            row.Controls.Add(new Label { Text = "Поиск:", Width = 60, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Padding = new Padding(0, 7, 0, 0) });
+            row.Controls.Add(new Label { Text = "Поиск:", Width = 66, Height = 44, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Margin = new Padding(0, 0, 6, 0) });
             _txtSearch.Width = 240;
-            _txtSearch.Margin = new Padding(0, 0, 8, 0);
+            _txtSearch.Margin = new Padding(0, 6, 14, 0);
             _txtSearch.TextChanged += delegate { LoadData(); };
             row.Controls.Add(_txtSearch);
-            Button add = Theme.CreatePrimaryButton("Добавить", 110, false);
-            Button edit = Theme.CreateSecondaryButton("Изменить", 110);
-            Button del = Theme.CreateSecondaryButton("Удалить", 110);
-            add.Margin = new Padding(0, 0, 8, 0);
-            edit.Margin = new Padding(0, 0, 8, 0);
-            del.Margin = new Padding(0, 0, 8, 0);
+            Button add = Theme.CreatePrimaryButton("Добавить", 136);
+            Button edit = Theme.CreateSecondaryButton("Изменить", 136);
+            Button del = Theme.CreateSecondaryButton("Удалить", 136);
+            add.Margin = new Padding(0, 0, 10, 0);
+            edit.Margin = new Padding(0, 0, 10, 0);
+            del.Margin = new Padding(0, 0, 10, 0);
             add.Click += delegate { SafeRun(delegate { OpenEditor(null); }); };
             edit.Click += delegate { SafeRun(delegate { object key = SelectedKey(_grid); if (key != null) OpenEditor(key); }); };
             del.Click += delegate { SafeRun(delegate { DeleteSelected(); }); };
@@ -253,6 +253,7 @@ namespace AutoInsuranceWinForms
         private readonly EntityConfig _config;
         private readonly object _key;
         private readonly Dictionary<string, Control> _controls = new Dictionary<string, Control>();
+        private readonly Dictionary<string, ComboBox> _lookupBoxes = new Dictionary<string, ComboBox>();
         private CheckBox _chkCreateTestDrive;
         private DateTimePicker _dtTestDrive;
 
@@ -274,20 +275,18 @@ namespace AutoInsuranceWinForms
             Panel header = new Panel { Dock = DockStyle.Top, Height = 92, BackColor = Theme.Ink, Padding = new Padding(26, 14, 26, 14) };
             header.Controls.Add(new Label { Text = key == null ? "Создание записи" : "Редактирование записи", Dock = DockStyle.Top, Height = 34, ForeColor = Color.White, Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold) });
             header.Controls.Add(new Label { Text = config.Title + " / карточка данных автосалона", Dock = DockStyle.Bottom, Height = 28, ForeColor = Color.FromArgb(191, 214, 238) });
-            shell.Controls.Add(header);
 
-            var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 4, Padding = new Padding(24), AutoScroll = true, BackColor = Theme.Card };
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24));
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 26));
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24));
-            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 26));
+            var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Padding = new Padding(24), AutoScroll = true, BackColor = Theme.Card };
+            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36));
+            table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 64));
 
             int index = 0;
             foreach (var field in config.Fields)
             {
-                var control = CreateControl(field);
+                var control = CreateControl(field, out ComboBox lookupBox);
                 control.Dock = DockStyle.Fill;
-                _controls[field.Column] = control;
+                _controls[field.Column] = lookupBox != null ? (Control)lookupBox : control;
+                if (lookupBox != null) _lookupBoxes[field.Column] = lookupBox;
                 AddField(table, field.Label + (field.Required ? " *" : string.Empty), control, index++);
             }
             if (_config.TableName == "Deal") AddDealAssistBlock(table);
@@ -300,12 +299,15 @@ namespace AutoInsuranceWinForms
             save.Click += delegate { SaveData(); };
             cancel.Click += delegate { DialogResult = DialogResult.Cancel; Close(); };
             buttons.Controls.Add(save); buttons.Controls.Add(cancel);
-            shell.Controls.Add(table); shell.Controls.Add(buttons);
+            shell.Controls.Add(buttons);
+            shell.Controls.Add(table);
+            shell.Controls.Add(header);
             if (key != null) LoadData();
         }
 
-        private Control CreateControl(FieldDef f)
+        private Control CreateControl(FieldDef f, out ComboBox lookupBox)
         {
+            lookupBox = null;
             if (f.Kind == FieldKind.Text)
             {
                 var tb = Theme.CreateTextBox(330);
@@ -344,23 +346,73 @@ namespace AutoInsuranceWinForms
                 cb.DisplayMember = f.DisplayMember;
             }
             else LookupService.Fill(cb, f.LookupSql, f.ValueMember, f.DisplayMember);
+            lookupBox = cb;
+
+            if (_key == null
+                && _config.TableName == "Deal"
+                && (f.Column == "client_id" || f.Column == "vin"))
+            {
+                var wrap = new TableLayoutPanel { ColumnCount = 2, Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(0) };
+                wrap.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+                wrap.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+                cb.Dock = DockStyle.Fill;
+                Button quickAdd = Theme.CreateSecondaryButton(f.Column == "client_id" ? "Новый клиент" : "Новый авто", f.Column == "client_id" ? 128 : 112);
+                quickAdd.Margin = new Padding(10, 0, 0, 0);
+                quickAdd.Anchor = AnchorStyles.Right;
+                quickAdd.Click += delegate { OpenQuickAddForDeal(f.Column); };
+                wrap.Controls.Add(cb, 0, 0);
+                wrap.Controls.Add(quickAdd, 1, 0);
+                return wrap;
+            }
             return cb;
         }
 
         private void AddField(TableLayoutPanel t, string name, Control control, int index)
         {
-            int row = index / 2;
-            int col = (index % 2) * 2;
+            int row = index;
             while (t.RowCount <= row)
             {
                 t.RowCount++;
-                t.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
+                t.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
             }
-            Label label = new Label { Text = name, Dock = DockStyle.Fill, Padding = new Padding(0, 10, 10, 0), ForeColor = Theme.Muted, TextAlign = ContentAlignment.TopLeft };
-            Panel inputWrap = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 6, 18, 6) };
+            Label label = new Label { Text = name, Dock = DockStyle.Fill, Padding = new Padding(0, 12, 10, 0), ForeColor = Theme.Muted, TextAlign = ContentAlignment.TopLeft, AutoEllipsis = true };
+            Panel inputWrap = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 8, 18, 8) };
             inputWrap.Controls.Add(control);
-            t.Controls.Add(label, col, row);
-            t.Controls.Add(inputWrap, col + 1, row);
+            t.Controls.Add(label, 0, row);
+            t.Controls.Add(inputWrap, 1, row);
+        }
+
+        private void OpenQuickAddForDeal(string column)
+        {
+            var lookup = _lookupBoxes.ContainsKey(column) ? _lookupBoxes[column] : null;
+            if (lookup == null) return;
+            var entity = column == "client_id" ? EntityConfigs.Clients() : EntityConfigs.Cars();
+            using (var f = new EntityEditForm(entity, null))
+            {
+                if (f.ShowDialog(this) != DialogResult.OK) return;
+            }
+            var field = _config.Fields.First(x => x.Column == column);
+            LookupService.Fill(lookup, field.LookupSql, field.ValueMember, field.DisplayMember);
+            SelectLatestLookupValue(column, lookup);
+        }
+
+        private void SelectLatestLookupValue(string column, ComboBox lookup)
+        {
+            try
+            {
+                if (column == "client_id")
+                {
+                    var dt = Db.Query("SELECT TOP 1 client_id FROM dbo.Client ORDER BY client_id DESC");
+                    if (dt.Rows.Count > 0) lookup.SelectedValue = dt.Rows[0]["client_id"];
+                    return;
+                }
+                if (column == "vin")
+                {
+                    var dt = Db.Query("SELECT TOP 1 vin FROM dbo.Car ORDER BY vin DESC");
+                    if (dt.Rows.Count > 0) lookup.SelectedValue = dt.Rows[0]["vin"];
+                }
+            }
+            catch { }
         }
 
         private void LoadData()
@@ -419,6 +471,7 @@ namespace AutoInsuranceWinForms
         {
             try
             {
+                PrepareInputValues();
                 if (!ValidateFields()) return;
                 var fields = _config.Fields.Where(f => !(_key != null && f.Column == _config.KeyColumn && !_config.KeyIsIdentity)).ToList();
                 var parameters = new List<SqlParameter>();
@@ -446,6 +499,26 @@ namespace AutoInsuranceWinForms
             catch (Exception ex) { MessageBox.Show("Ошибка сохранения записи.\nПроверьте обязательные поля и корректность значений.\n\n" + ex.Message); }
         }
 
+        private void PrepareInputValues()
+        {
+            foreach (var f in _config.Fields.Where(x => x.Kind == FieldKind.Text))
+            {
+                Control c;
+                if (!_controls.TryGetValue(f.Column, out c)) continue;
+                c.Text = c.Text.Trim();
+            }
+            if (_config.TableName == "Employee")
+            {
+                string normalized;
+                if (_controls.ContainsKey("phone") && ValidationRules.TryNormalizePhoneRu(GetText("phone"), out normalized))
+                    _controls["phone"].Text = normalized;
+                if (_controls.ContainsKey("email"))
+                    _controls["email"].Text = GetText("email").ToLowerInvariant();
+            }
+            if (_config.TableName == "Car" && _controls.ContainsKey("vin"))
+                _controls["vin"].Text = GetText("vin").ToUpperInvariant();
+        }
+
         private bool ValidateFields()
         {
             foreach (var f in _config.Fields)
@@ -455,6 +528,16 @@ namespace AutoInsuranceWinForms
                 {
                     MessageBox.Show("Заполните поле: " + f.Label); return false;
                 }
+                if (f.Kind == FieldKind.Text)
+                {
+                    string txt = GetText(f.Column);
+                    if (txt.Length > 255) { MessageBox.Show("Поле \"" + f.Label + "\" слишком длинное (максимум 255 символов)."); return false; }
+                }
+                if (f.Kind == FieldKind.Number && val != DBNull.Value)
+                {
+                    decimal num = Convert.ToDecimal(val);
+                    if (num < 0) { MessageBox.Show("Поле \"" + f.Label + "\" не может быть отрицательным."); return false; }
+                }
             }
             if (_config.TableName == "Client")
             {
@@ -462,6 +545,16 @@ namespace AutoInsuranceWinForms
                 if (inn.Length > 0 && !ValidationRules.IsInn12(inn)) { MessageBox.Show("ИНН клиента должен содержать 12 цифр."); return false; }
                 var bd = GetDate("birth_date");
                 if (bd.HasValue && bd.Value.Date > DateTime.Today) { MessageBox.Show("Дата рождения не может быть в будущем."); return false; }
+                if (bd.HasValue && bd.Value.Date < new DateTime(1900, 1, 1)) { MessageBox.Show("Дата рождения указана некорректно."); return false; }
+                if (bd.HasValue)
+                {
+                    DateTime eighteenYearsAgo = DateTime.Today.AddYears(-18);
+                    if (bd.Value.Date > eighteenYearsAgo)
+                    {
+                        MessageBox.Show("Клиент должен быть не моложе 18 лет.");
+                        return false;
+                    }
+                }
             }
             if (_config.TableName == "Employee")
             {
@@ -478,16 +571,34 @@ namespace AutoInsuranceWinForms
                 if (!ValidationRules.IsVin(vin)) { MessageBox.Show("VIN должен содержать 17 латинских букв и цифр без I, O, Q."); return false; }
                 var year = Convert.ToInt32(GetValue(_config.Fields.First(f => f.Column == "year")));
                 if (year < 1980 || year > DateTime.Today.Year + 1) { MessageBox.Show("Год выпуска указан некорректно."); return false; }
+                var mileage = Convert.ToDecimal(GetValue(_config.Fields.First(f => f.Column == "mileage")));
+                if (mileage < 0) { MessageBox.Show("Пробег не может быть отрицательным."); return false; }
                 var arrival = GetDate("arrival_date");
                 if (arrival.HasValue && arrival.Value.Date > DateTime.Today) { MessageBox.Show("Дата поступления не может быть позже текущей даты."); return false; }
+                var purchase = GetDecimal("purchase_price");
+                var sale = GetDecimal("sale_price");
+                if (purchase.HasValue && sale.HasValue && sale.Value < purchase.Value * 0.5m)
+                {
+                    if (MessageBox.Show("Цена продажи значительно меньше закупочной. Продолжить сохранение?", "Проверка цены", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                        return false;
+                }
             }
             if (_config.TableName == "Deal")
             {
                 var deal = GetDate("deal_date"); var transfer = GetDate("transfer_date");
                 if (deal.HasValue && deal.Value.Date > DateTime.Today) { MessageBox.Show("Дата договора не может быть позже текущей даты."); return false; }
                 if (deal.HasValue && transfer.HasValue && transfer.Value.Date < deal.Value.Date) { MessageBox.Show("Дата передачи не может быть раньше даты договора."); return false; }
+                if (_chkCreateTestDrive != null && _dtTestDrive != null && _chkCreateTestDrive.Checked && deal.HasValue && _dtTestDrive.Value > deal.Value)
+                {
+                    MessageBox.Show("Дата тест-драйва не может быть позже даты оформления договора.");
+                    return false;
+                }
                 var finalPrice = Convert.ToDecimal(GetValue(_config.Fields.First(f => f.Column == "final_price")));
                 if (finalPrice <= 0) { MessageBox.Show("Итоговая цена сделки должна быть больше нуля."); return false; }
+                var down = GetDecimal("down_payment");
+                var credit = GetDecimal("credit_amount");
+                if (down.HasValue && down.Value > finalPrice) { MessageBox.Show("Первоначальный взнос не может быть больше итоговой цены."); return false; }
+                if (credit.HasValue && credit.Value > finalPrice) { MessageBox.Show("Сумма кредита не может быть больше итоговой цены."); return false; }
             }
             if (_config.TableName == "TestDrive")
             {
@@ -502,6 +613,15 @@ namespace AutoInsuranceWinForms
                 if (planned.HasValue && done.HasValue && done.Value.Date < planned.Value.Date) { MessageBox.Show("Дата выполнения услуги не может быть раньше плановой даты."); return false; }
             }
             return true;
+        }
+
+        private decimal? GetDecimal(string column)
+        {
+            var field = _config.Fields.FirstOrDefault(f => f.Column == column);
+            if (field == null) return null;
+            object v = GetValue(field);
+            if (v == DBNull.Value) return null;
+            return Convert.ToDecimal(v);
         }
 
         private string GetText(string column)
@@ -526,8 +646,29 @@ namespace AutoInsuranceWinForms
             _dtTestDrive.Format = DateTimePickerFormat.Custom;
             _dtTestDrive.CustomFormat = "dd.MM.yyyy HH:mm";
             _dtTestDrive.Value = DateTime.Now.AddHours(2);
+            _dtTestDrive.Enabled = false;
+            _dtTestDrive.Visible = false;
+            _chkCreateTestDrive.CheckedChanged += delegate
+            {
+                bool active = _chkCreateTestDrive.Checked;
+                _dtTestDrive.Enabled = active;
+                _dtTestDrive.Visible = active;
+                if (_dtTestDrive.Parent != null)
+                {
+                    _dtTestDrive.Parent.Visible = active;
+                    _dtTestDrive.Parent.Enabled = active;
+                }
+                if (_dtTestDrive.FindForm() != null) _dtTestDrive.FindForm().PerformLayout();
+                if (active && _dtTestDrive.Value < DateTime.Now.AddMinutes(5))
+                    _dtTestDrive.Value = DateTime.Now.AddHours(2);
+            };
             AddField(t, "Тест-драйв", _chkCreateTestDrive, t.RowCount);
             AddField(t, "Плановое начало", _dtTestDrive, t.RowCount);
+            if (_dtTestDrive.Parent != null)
+            {
+                _dtTestDrive.Parent.Visible = false;
+                _dtTestDrive.Parent.Enabled = false;
+            }
         }
 
         private void TryCreateRelatedTestDrive()
@@ -536,6 +677,12 @@ namespace AutoInsuranceWinForms
             if (_dtTestDrive.Value < DateTime.Now.AddMinutes(-1))
             {
                 MessageBox.Show("Тест-драйв не создан: плановое время не может быть в прошлом.");
+                return;
+            }
+            DateTime? dealDate = GetDate("deal_date");
+            if (dealDate.HasValue && _dtTestDrive.Value > dealDate.Value)
+            {
+                MessageBox.Show("Тест-драйв не создан: дата тест-драйва не может быть позже даты оформления договора.");
                 return;
             }
             object client = GetValue(_config.Fields.First(f => f.Column == "client_id"));
@@ -553,6 +700,7 @@ namespace AutoInsuranceWinForms
                 new SqlParameter("@e", manager),
                 new SqlParameter("@s", _dtTestDrive.Value),
                 new SqlParameter("@d", 30));
+            MessageBox.Show("Тест-драйв успешно создан.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private string BuildSqlHint(SqlException ex)
