@@ -609,13 +609,22 @@ namespace AutoInsuranceWinForms
             {
                 var duration = Convert.ToInt32(GetValue(_config.Fields.First(f => f.Column == "planned_duration_min")));
                 if (duration < 10 || duration > 240) { MessageBox.Show("Длительность тест-драйва должна быть от 10 до 240 минут."); return false; }
+                var plannedStart = GetDate("planned_start");
+                if (plannedStart.HasValue && plannedStart.Value < DateTime.Now.AddMinutes(-1)) { MessageBox.Show("Плановое начало тест-драйва не может быть в прошлом."); return false; }
                 var start = GetDate("actual_start"); var end = GetDate("actual_end");
                 if (start.HasValue && end.HasValue && end.Value < start.Value) { MessageBox.Show("Фактическое окончание не может быть раньше начала."); return false; }
             }
             if (_config.TableName == "ServiceOrder")
             {
+                var deal = GetValue(_config.Fields.First(f => f.Column == "deal_id"));
+                if (deal == DBNull.Value) { MessageBox.Show("Для услуги необходимо выбрать договор (сделку)."); return false; }
+                var cost = GetDecimal("cost");
+                if (!cost.HasValue || cost.Value <= 0) { MessageBox.Show("Стоимость услуги должна быть больше 0."); return false; }
                 var planned = GetDate("planned_date"); var done = GetDate("done_date");
                 if (planned.HasValue && done.HasValue && done.Value.Date < planned.Value.Date) { MessageBox.Show("Дата выполнения услуги не может быть раньше плановой даты."); return false; }
+                var created = GetDate("created_at");
+                if (created.HasValue && created.Value.Date > DateTime.Today) { MessageBox.Show("Дата создания услуги не может быть в будущем."); return false; }
+                if (created.HasValue && planned.HasValue && planned.Value.Date < created.Value.Date) { MessageBox.Show("Плановая дата услуги не может быть раньше даты создания."); return false; }
             }
             return true;
         }
