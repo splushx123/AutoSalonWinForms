@@ -542,6 +542,7 @@ namespace AutoInsuranceWinForms
             if (_config.TableName == "Client")
             {
                 var inn = GetText("inn");
+                if (string.IsNullOrWhiteSpace(inn)) { MessageBox.Show("Поле ИНН обязательно для заполнения."); return false; }
                 if (inn.Length > 0 && !ValidationRules.IsInn12(inn)) { MessageBox.Show("ИНН клиента должен содержать 12 цифр."); return false; }
                 var bd = GetDate("birth_date");
                 if (bd.HasValue && bd.Value.Date > DateTime.Today) { MessageBox.Show("Дата рождения не может быть в будущем."); return false; }
