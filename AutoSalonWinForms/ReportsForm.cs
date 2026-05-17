@@ -11,7 +11,7 @@ namespace AutoInsuranceWinForms
     public class ReportsForm : Form
     {
         private readonly DataGridView _grid = new DataGridView { Dock = DockStyle.Fill };
-        private readonly ListBox _reports = new ListBox();
+        private readonly ComboBox _reports = Theme.CreateComboBox(360);
         private readonly Label _reportTitle = new Label();
         private readonly Label _rowCount = new Label();
         private static readonly Encoding ExportEncoding = new UTF8Encoding(true);
@@ -26,38 +26,21 @@ namespace AutoInsuranceWinForms
             Panel page = new Panel { Dock = DockStyle.Fill, Padding = new Padding(22), BackColor = Theme.AppBack };
             Controls.Add(page);
 
-            RoundedPanel menu = Theme.CreateCard(0);
-            menu.Dock = DockStyle.Left;
-            menu.Width = 360;
-            menu.Margin = new Padding(0, 0, 18, 0);
-            page.Controls.Add(menu);
-
-            Panel menuHeader = new Panel { Dock = DockStyle.Top, Height = 124, BackColor = Theme.Ink, Padding = new Padding(18, 14, 18, 14) };
-            Label title = new Label { Text = "Отчеты", Dock = DockStyle.Top, Height = 46, Font = new Font("Segoe UI Semibold", 21F, FontStyle.Bold), ForeColor = Color.White };
-            Label hint = new Label { Text = "Выберите отчет из списка и нажмите экспорт при необходимости.", Dock = DockStyle.Fill, ForeColor = Color.FromArgb(196, 217, 238) };
-            menuHeader.Controls.Add(hint);
-            menuHeader.Controls.Add(title);
-            menu.Controls.Add(menuHeader);
-
-            Panel menuBody = new Panel { Dock = DockStyle.Fill, Padding = new Padding(14, 12, 14, 12), BackColor = Theme.Card };
-            _reports.Dock = DockStyle.Fill;
-            _reports.BorderStyle = BorderStyle.FixedSingle;
-            _reports.Font = new Font("Segoe UI", 10.5F);
-            _reports.ItemHeight = 34;
-            _reports.IntegralHeight = false;
-            _reports.BackColor = Theme.CardAlt;
+            Panel toolbar = new Panel { Dock = DockStyle.Top, Height = 76, BackColor = Theme.Card, Padding = new Padding(12, 12, 12, 12) };
+            FlowLayoutPanel row = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false };
+            row.Controls.Add(new Label { Text = "Отчет:", Width = 66, Height = 44, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Ink, Margin = new Padding(0, 0, 8, 0) });
+            _reports.DropDownStyle = ComboBoxStyle.DropDownList;
+            _reports.Width = 420;
+            _reports.Margin = new Padding(0, 6, 12, 0);
             _reports.Items.AddRange(new object[] { "Автомобили по статусам", "Продажи по менеджерам", "Выручка по формам оплаты", "Тест-драйвы по результатам", "Выполненные услуги", "Доступные автомобили" });
             _reports.SelectedIndex = 0;
             _reports.SelectedIndexChanged += delegate { BuildReport(); };
-            Button export = Theme.CreatePrimaryButton("Экспорт результата", 260);
-            export.Dock = DockStyle.Bottom;
-            export.Margin = new Padding(0);
+            Button export = Theme.CreatePrimaryButton("Экспорт результата", 180);
+            export.Margin = new Padding(0, 0, 0, 0);
             export.Click += delegate { Export(); };
-            Panel exportWrap = new Panel { Dock = DockStyle.Bottom, Height = 64, Padding = new Padding(0, 10, 0, 0), BackColor = Theme.Card };
-            exportWrap.Controls.Add(export);
-            menuBody.Controls.Add(_reports);
-            menuBody.Controls.Add(exportWrap);
-            menu.Controls.Add(menuBody);
+            row.Controls.Add(_reports);
+            row.Controls.Add(export);
+            toolbar.Controls.Add(row);
 
             RoundedPanel work = Theme.CreateCard(0);
             work.Dock = DockStyle.Fill;
@@ -80,6 +63,7 @@ namespace AutoInsuranceWinForms
             work.Controls.Add(_grid);
             work.Controls.Add(subHeader);
             work.Controls.Add(header);
+            page.Controls.Add(toolbar);
             Load += delegate { Theme.ApplyCurrentTheme(this); BuildReport(); };
         }
 
