@@ -468,6 +468,7 @@ namespace AutoInsuranceWinForms
         {
             try
             {
+                PrepareInputValues();
                 if (!ValidateFields()) return;
                 var fields = _config.Fields.Where(f => !(_key != null && f.Column == _config.KeyColumn && !_config.KeyIsIdentity)).ToList();
                 var parameters = new List<SqlParameter>();
@@ -495,6 +496,26 @@ namespace AutoInsuranceWinForms
             catch (Exception ex) { MessageBox.Show("Ошибка сохранения записи.\nПроверьте обязательные поля и корректность значений.\n\n" + ex.Message); }
         }
 
+        private void PrepareInputValues()
+        {
+            foreach (var f in _config.Fields.Where(x => x.Kind == FieldKind.Text))
+            {
+                Control c;
+                if (!_controls.TryGetValue(f.Column, out c)) continue;
+                c.Text = c.Text.Trim();
+            }
+            if (_config.TableName == "Employee")
+            {
+                string normalized;
+                if (_controls.ContainsKey("phone") && ValidationRules.TryNormalizePhoneRu(GetText("phone"), out normalized))
+                    _controls["phone"].Text = normalized;
+                if (_controls.ContainsKey("email"))
+                    _controls["email"].Text = GetText("email").ToLowerInvariant();
+            }
+            if (_config.TableName == "Car" && _controls.ContainsKey("vin"))
+                _controls["vin"].Text = GetText("vin").ToUpperInvariant();
+        }
+
         private bool ValidateFields()
         {
             foreach (var f in _config.Fields)
@@ -504,6 +525,16 @@ namespace AutoInsuranceWinForms
                 {
                     MessageBox.Show("Заполните поле: " + f.Label); return false;
                 }
+                if (f.Kind == FieldKind.Text)
+                {
+                    string txt = GetText(f.Column);
+                    if (txt.Length > 255) { MessageBox.Show("Поле \"" + f.Label + "\" слишком длинное (максимум 255 символов)."); return false; }
+                }
+                if (f.Kind == FieldKind.Number && val != DBNull.Value)
+                {
+                    decimal num = Convert.ToDecimal(val);
+                    if (num < 0) { MessageBox.Show("Поле \"" + f.Label + "\" не может быть отрицательным."); return false; }
+                }
             }
             if (_config.TableName == "Client")
             {
@@ -511,6 +542,7 @@ namespace AutoInsuranceWinForms
                 if (inn.Length > 0 && !ValidationRules.IsInn12(inn)) { MessageBox.Show("ИНН клиента должен содержать 12 цифр."); return false; }
                 var bd = GetDate("birth_date");
                 if (bd.HasValue && bd.Value.Date > DateTime.Today) { MessageBox.Show("Дата рождения не может быть в будущем."); return false; }
+                if (bd.HasValue && bd.Value.Date < new DateTime(1900, 1, 1)) { MessageBox.Show("Дата рождения указана некорректно."); return false; }
             }
             if (_config.TableName == "Employee")
             {
@@ -527,8 +559,17 @@ namespace AutoInsuranceWinForms
                 if (!ValidationRules.IsVin(vin)) { MessageBox.Show("VIN должен содержать 17 латинских букв и цифр без I, O, Q."); return false; }
                 var year = Convert.ToInt32(GetValue(_config.Fields.First(f => f.Column == "year")));
                 if (year < 1980 || year > DateTime.Today.Year + 1) { MessageBox.Show("Год выпуска указан некорректно."); return false; }
+                var mileage = Convert.ToDecimal(GetValue(_config.Fields.First(f => f.Column == "mileage")));
+                if (mileage < 0) { MessageBox.Show("Пробег не может быть отрицательным."); return false; }
                 var arrival = GetDate("arrival_date");
                 if (arrival.HasValue && arrival.Value.Date > DateTime.Today) { MessageBox.Show("Дата поступления не может быть позже текущей даты."); return false; }
+                var purchase = GetDecimal("purchase_price");
+                var sale = GetDecimal("sale_price");
+                if (purchase.HasValue && sale.HasValue && sale.Value < purchase.Value * 0.5m)
+                {
+                    if (MessageBox.Show("Цена продажи значительно меньше закупочной. Продолжить сохранение?", "Проверка цены", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                        return false;
+                }
             }
             if (_config.TableName == "Deal")
             {
@@ -537,6 +578,10 @@ namespace AutoInsuranceWinForms
                 if (deal.HasValue && transfer.HasValue && transfer.Value.Date < deal.Value.Date) { MessageBox.Show("Дата передачи не может быть раньше даты договора."); return false; }
                 var finalPrice = Convert.ToDecimal(GetValue(_config.Fields.First(f => f.Column == "final_price")));
                 if (finalPrice <= 0) { MessageBox.Show("Итоговая цена сделки должна быть больше нуля."); return false; }
+                var down = GetDecimal("down_payment");
+                var credit = GetDecimal("credit_amount");
+                if (down.HasValue && down.Value > finalPrice) { MessageBox.Show("Первоначальный взнос не может быть больше итоговой цены."); return false; }
+                if (credit.HasValue && credit.Value > finalPrice) { MessageBox.Show("Сумма кредита не может быть больше итоговой цены."); return false; }
             }
             if (_config.TableName == "TestDrive")
             {
@@ -551,6 +596,15 @@ namespace AutoInsuranceWinForms
                 if (planned.HasValue && done.HasValue && done.Value.Date < planned.Value.Date) { MessageBox.Show("Дата выполнения услуги не может быть раньше плановой даты."); return false; }
             }
             return true;
+        }
+
+        private decimal? GetDecimal(string column)
+        {
+            var field = _config.Fields.FirstOrDefault(f => f.Column == column);
+            if (field == null) return null;
+            object v = GetValue(field);
+            if (v == DBNull.Value) return null;
+            return Convert.ToDecimal(v);
         }
 
         private string GetText(string column)
@@ -612,6 +666,7 @@ namespace AutoInsuranceWinForms
                 new SqlParameter("@e", manager),
                 new SqlParameter("@s", _dtTestDrive.Value),
                 new SqlParameter("@d", 30));
+            MessageBox.Show("Тест-драйв успешно создан.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private string BuildSqlHint(SqlException ex)
