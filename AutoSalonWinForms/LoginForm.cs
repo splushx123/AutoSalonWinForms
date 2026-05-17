@@ -115,10 +115,48 @@ namespace AutoInsuranceWinForms
 
         private void DoLogin()
         {
-            if (string.IsNullOrWhiteSpace(_txtEmail.Text)) { _lblError.Text = "Введите почту."; return; }
-            if (string.IsNullOrWhiteSpace(_txtPassword.Text)) { _lblError.Text = "Введите пароль."; return; }
-            CurrentUser = AuthService.Authenticate(_txtEmail.Text, _txtPassword.Text);
-            if (CurrentUser == null) { _lblError.Text = "Неверная почта или пароль."; return; }
+            _lblError.Text = string.Empty;
+            string email = (_txtEmail.Text ?? string.Empty).Trim();
+            string password = (_txtPassword.Text ?? string.Empty).Trim();
+            _txtEmail.Text = email;
+            _txtPassword.Text = password;
+
+            if (email.Length == 0)
+            {
+                _lblError.Text = "Введите почту.";
+                MessageBox.Show("Поле «Почта» не заполнено.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _txtEmail.Focus();
+                return;
+            }
+            if (!ValidationRules.IsEmail(email))
+            {
+                _lblError.Text = "Неверный формат почты.";
+                MessageBox.Show("Введите корректную почту в формате name@example.com.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _txtEmail.Focus();
+                return;
+            }
+            if (password.Length == 0)
+            {
+                _lblError.Text = "Введите пароль.";
+                MessageBox.Show("Поле «Пароль» не заполнено.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _txtPassword.Focus();
+                return;
+            }
+            if (password.Length < 4)
+            {
+                _lblError.Text = "Пароль слишком короткий.";
+                MessageBox.Show("Пароль должен содержать минимум 4 символа.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _txtPassword.Focus();
+                return;
+            }
+
+            CurrentUser = AuthService.Authenticate(email, password);
+            if (CurrentUser == null)
+            {
+                _lblError.Text = "Неверная почта или пароль.";
+                MessageBox.Show("Неверная почта или пароль. Проверьте введенные данные.", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             string error;
             if (!Db.CanConnect(out error))
             {
